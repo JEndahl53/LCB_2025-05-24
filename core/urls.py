@@ -1,3 +1,4 @@
+# core/urls.py
 """
 URL configuration for core project.
 
@@ -17,8 +18,159 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from neapolitan.views import CRUDView
+import concerts, library
+
+
+# Neapolitan CRUDView models
+class VenueView(CRUDView):
+    """
+    View for the Venue model.
+    """
+
+    model = concerts.models.Venue
+    fields = ["name", "address", "city", "state", "zip_code", "map_link"]
+
+
+class ConductorView(CRUDView):
+    """
+    View for the Conductor model.
+    """
+
+    model = concerts.models.Conductor
+    fields = ["title", "first_name", "middle_initial", "last_name", "description"]
+
+
+class GuestView(CRUDView):
+    """
+    View for the Guest model.
+    """
+
+    model = concerts.models.Guest
+    fields = ["title", "first_name", "middle_initial", "last_name", "description"]
+
+
+class ConcertView(CRUDView):
+    """
+    View for the Concert model.
+    """
+
+    model = concerts.models.Concert
+    fields = [
+        "title",
+        "date",
+        "time",
+        "venue",
+        "conductor",
+        "guest",
+        "description",
+    ]
+
+
+class MusicPieceView(CRUDView):
+    """
+    View for the MusicPiece model.
+    """
+
+    model = library.models.MusicPiece
+    fields = [
+        "title",
+        "composer",
+        "arranger",
+        "location_drawer",
+        "location_number",
+        "genre",
+        "difficulty",
+        "status",
+        "publisher",
+        "year_published",
+        "date_acquired",
+        "purchase_price",
+        "purchase_source",
+        "loaning_organization",
+        "loan_start_date",
+        "expected_return_date",
+        "renting_organization",
+        "rental_start_date",
+        "rental_end_date",
+        "rental_fee",
+        "duration",
+        "comments",
+    ]
+
+
+class RentingOrganizationView(CRUDView):
+    """
+    View for the RentingOrganization model.
+    """
+
+    model = library.models.RentingOrganization
+    fields = ["name", "contact_person", "contact_email", "contact_phone", "description"]
+
+
+class LoaningOrganizationView(CRUDView):
+    """
+    View for the LoaningOrganization model.
+    """
+
+    model = library.models.LoaningOrganization
+    fields = ["name", "contact_person", "contact_email", "contact_phone", "description"]
+
+
+class PublisherView(CRUDView):
+    """
+    View for the Publisher model.
+    """
+
+    model = library.models.Publisher
+    fields = ["name", "contact_person", "contact_email", "contact_phone", "description"]
+
+
+class ComposerView(CRUDView):
+    """
+    View for the Composer model.
+    """
+
+    model = library.models.Composer
+    fields = ["title", "first_name", "middle_initial", "last_name", "description"]
+
+
+class ArrangerView(CRUDView):
+    """
+    View for the Arranger model.
+    """
+
+    model = library.models.Arranger
+    fields = ["title", "first_name", "middle_initial", "last_name", "description"]
+
+
+class GenreView(CRUDView):
+    """
+    View for the Genre model.
+    """
+
+    model = library.models.Genre
+    fields = ["name", "date_added", "date_updated"]
+
 
 urlpatterns = [
+    # Django Admin
     path("admin/", admin.site.urls),
+    # User Management
+    path("accounts/", include("django.contrib.auth.urls")),
+    # Local Apps
     path("", include("concerts.urls")),
+    path("library/", include("library.urls")),
 ]
+
+urlpatterns += VenueView.get_urls()
+urlpatterns += ConductorView.get_urls()
+urlpatterns += GuestView.get_urls()
+urlpatterns += ConcertView.get_urls()
+urlpatterns += MusicPieceView.get_urls()
+urlpatterns += RentingOrganizationView.get_urls()
+urlpatterns += LoaningOrganizationView.get_urls()
+urlpatterns += PublisherView.get_urls()
+urlpatterns += ComposerView.get_urls()
+urlpatterns += ArrangerView.get_urls()
+urlpatterns += GenreView.get_urls()

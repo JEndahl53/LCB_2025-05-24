@@ -1,8 +1,22 @@
 <!-- templates/home.html -->
-{% extends "_base.html" %}
+
+{% extends "base.html" %}
+{% load static %}
+
 {% block title %}Home{% endblock %}
+
 {% block content %}
-<h1>Welcome to the LCB Library Project</h1>
-<p>This is a simple library management system.</p>
-<p>Use the navigation bar to explore the application.</p>
+  <h1>Welcome to the LCB Library Project</h1>
+  <p>This is a simple library management system.</p>
+  <p>Use the navigation bar to explore the application.</p>
+  {% if user.is_authenticated %}
+    <p>Hi, {{ user.email }}</p>
+    <form action="{% url 'logout' %}" method="post">
+      {% csrf_token %}
+      <button type="submit">Logout</button>
+    </form>
+  {% else %}
+    <p>Hi, Guest</p>
+    <a href="{% url 'login' %}">Login</a>
+  {% endif %}
 {% endblock %}

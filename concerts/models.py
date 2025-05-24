@@ -1,3 +1,125 @@
+# concerts/models.py
+#
 from django.db import models
+from django.conf import settings
+from django.urls import reverse
 
-# Create your models here.
+import core.models
+
+
+def construct_full_name(self):
+    """
+    Helper function to construct full name from first name, middle initial, and last name.
+    """
+    full_name = ""
+    if self.title:
+        full_name += self.title + " "
+    if self.first_name:
+        full_name += self.first_name + " "
+    if self.middle_initial:
+        full_name += self.middle_initial + " "
+    full_name += self.last_name
+    return full_name
+
+
+class Venue(models.Model):
+    """
+    Model representing a concert venue.
+    """
+
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=300, blank=True, null=True)
+    city = models.CharField(max_length=50, blank=True, null=True)
+    state = models.CharField(max_length=2, blank=True, null=True)
+    zip_code = models.CharField(max_length=20, blank=True, null=True)
+    map_link = models.URLField(blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    # Function to get output City, State ZIP
+    def get_address2(self):
+        parts = []
+        if self.city:
+            parts.append(self.city)
+
+        state_zip_part = ""
+        if self.state:
+            state_zip_part += self.state
+        if self.zip_code:
+            state_zip_part += f" {self.zip_code}" if state_zip_part else self.zip_code
+
+        if state_zip_part:
+            parts.append(state_zip_part)
+
+        return ", ".join(parts)
+
+
+class Conductor(core.models.PersonBase):
+    """
+    Model representing a conductor.
+    """
+
+    title = models.CharField(max_length=10, blank=True, null=True)
+    middle_initial = models.CharField(max_length=1, blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Conductor"
+        verbose_name_plural = "Conductors"
+
+    def __str__(self):
+        return construct_full_name(self)
+
+    def get_absolute_url(self):
+        return reverse("conductor_detail", args=[str(self.id)])
+
+
+class Guest(core.models.PersonBase):
+    """
+    Model representing a guest.
+    """
+
+    title = models.CharField(max_length=10, blank=True, null=True)
+    middle_initial = models.CharField(max_length=1, blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Guest"
+        verbose_name_plural = "Guests"
+
+    def __str__(self):
+        return self.get_full_name()
+
+    def __str__(self):
+        return construct_full_name(self)
+
+    def get_absolute_url(self):
+        return reverse("guest_detail", args=[str(self.id)])
+
+
+class Concert(models.Model):
+    """
+    Model representing a concert.
+    """
+
+    title = models.CharField(max_length=200)
+    date = models.DateTimeField(blank=True, null=True)
+    time = models.TimeField(blank=True, null=True)
+    venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null=True)
+    conductor = models.ManyToManyField(Conductor, blank=True)
+    guest = models.ManyToManyField(Guest, blank=True)
+    poster = models.ImageField(upload_to="posters/", blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("concert_detail", args=[str(self.id)])
