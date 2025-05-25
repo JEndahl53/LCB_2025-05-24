@@ -146,7 +146,7 @@ class RentingOrganization(core.models.OrganizationBase):
         ordering = ["name"]
 
 
-class MusicPiece(models.Model):
+class Music(models.Model):
     """
     Model representing a music piece.
     """
@@ -167,8 +167,9 @@ class MusicPiece(models.Model):
         ("B", "Borrowed From"),
         ("M", "Missing"),
     ]
+
     title = models.CharField(max_length=255)
-    composer = models.ManyToManyField(Composer, related_name="compositions")
+    composer = models.ManyToManyField(Composer, related_name="compositions", blank=True)
     arranger = models.ManyToManyField(Arranger, blank=True, related_name="arrangements")
     location_drawer = models.CharField(max_length=5, blank=True, null=True)
     location_number = models.CharField(max_length=5, blank=True, null=True)
@@ -204,6 +205,11 @@ class MusicPiece(models.Model):
     rental_fee = models.DecimalField(
         null=True, blank=True, max_digits=10, decimal_places=2
     )
+    borrowing_organization = models.ForeignKey(
+        BorrowingOrganization, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    borrowing_start_date = models.DateField(blank=True, null=True)
+    expected_borrowing_return_date = models.DateField(blank=True, null=True)
     # Miscellaneous
     duration = models.DurationField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
@@ -217,6 +223,6 @@ class MusicPiece(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = "Music Piece"
-        verbose_name_plural = "Music Pieces"
+        verbose_name = "Music"
+        verbose_name_plural = "Music"
         ordering = ["title"]

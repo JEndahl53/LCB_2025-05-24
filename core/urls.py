@@ -1,8 +1,8 @@
 # core/urls.py
 """
-URL configuration for core project.
+URL configuration for the core project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
+The `urlpatterns` list routes URLs to views. For more information, please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
 Examples:
 Function views
@@ -19,6 +19,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from neapolitan.views import CRUDView
+from django.views.generic import TemplateView
+from .views import HomePageView  # Import the view we created in core/views.py
 import concerts, library
 
 
@@ -72,7 +74,7 @@ class MusicPieceView(CRUDView):
     View for the MusicPiece model.
     """
 
-    model = library.models.MusicPiece
+    model = library.models.Music
     fields = [
         "title",
         "composer",
@@ -117,6 +119,21 @@ class LoaningOrganizationView(CRUDView):
     fields = ["name", "contact_person", "contact_email", "contact_phone", "description"]
 
 
+class BorrowingOrganizationView(CRUDView):
+    """
+    View for the BorrowingOrganization model.
+    """
+
+    model = library.models.BorrowingOrganization
+    fields = [
+        "name",
+        "contact_person",
+        "contact_email",
+        "contact_phone",
+        "description",
+    ]
+
+
 class PublisherView(CRUDView):
     """
     View for the Publisher model.
@@ -154,12 +171,13 @@ class GenreView(CRUDView):
 
 
 urlpatterns = [
+    path("", HomePageView.as_view(), name="home"),
     # Django Admin
     path("admin/", admin.site.urls),
     # User Management
     path("accounts/", include("django.contrib.auth.urls")),
     # Local Apps
-    path("", include("concerts.urls")),
+    path("concerts/", include("concerts.urls")),
     path("library/", include("library.urls")),
 ]
 
@@ -174,3 +192,6 @@ urlpatterns += PublisherView.get_urls()
 urlpatterns += ComposerView.get_urls()
 urlpatterns += ArrangerView.get_urls()
 urlpatterns += GenreView.get_urls()
+urlpatterns += RentingOrganizationView.get_urls()
+urlpatterns += LoaningOrganizationView.get_urls()
+urlpatterns += BorrowingOrganizationView.get_urls()

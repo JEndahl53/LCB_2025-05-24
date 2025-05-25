@@ -3,6 +3,8 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+from library.models import Music
+
 
 import core.models
 
@@ -117,9 +119,47 @@ class Concert(models.Model):
     description = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+    music = models.ManyToManyField(
+        Music,
+        through="ConcertProgram",
+        related_name="concerts",
+        through_fields=("concert", "music"),
+        blank=True,
+    )
 
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse("concert_detail", args=[str(self.id)])
+
+
+# Now create the linking file
+
+
+class ConcertProgram(models.Model):
+    """
+    Model representing the many-to-many relationship between Concert and Music.
+    """
+
+    concert = models.ForeignKey(
+        Concert, on_delete=models.CASCADE, related_name="program_items"
+    )
+    music = models.ForeignKey(
+        Music, on_delete=models.CASCADE, related_name="performances"
+    )
+    performance_order = models.PositiveIntegerField(
+        default=0, help_text="Concert program order."
+    )
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.concert.title} - {self.performance_order} - {self.music.title}"
+
+    class Meta:
+        # Ensure that the same music piece is not added to the same concert multiple times
+        unique_together = [["concert", "performance_order"], ["concert", "music"]]
+        ordering = ["concert", "performance_order"]
+        verbose_name = "Concert Program Item"
+        verbose_name_plural = "Concert Program Items"
