@@ -1,12 +1,11 @@
 # concerts/models.py
 #
 from django.db import models
-from django.conf import settings
 from django.urls import reverse
 from library.models import Music
 
 
-import core.models
+import common.models
 
 
 def construct_full_name(self):
@@ -59,7 +58,7 @@ class Venue(models.Model):
         return ", ".join(parts)
 
 
-class Conductor(core.models.PersonBase):
+class Conductor(common.models.PersonBase):
     """
     Model representing a conductor.
     """
@@ -80,7 +79,7 @@ class Conductor(core.models.PersonBase):
         return reverse("conductor_detail", args=[str(self.id)])
 
 
-class Guest(core.models.PersonBase):
+class Guest(common.models.PersonBase):
     """
     Model representing a guest.
     """
@@ -93,9 +92,6 @@ class Guest(core.models.PersonBase):
     class Meta:
         verbose_name = "Guest"
         verbose_name_plural = "Guests"
-
-    def __str__(self):
-        return self.get_full_name()
 
     def __str__(self):
         return construct_full_name(self)

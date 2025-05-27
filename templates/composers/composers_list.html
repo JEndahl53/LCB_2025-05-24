@@ -1,0 +1,24 @@
+<!-- templates/composers/composer_list.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Composers List{% endblock %}
+
+{% block content %}
+  <h1>Composers List</h1>
+
+  {% if composers %}
+    <ul>
+      {% for composer in composers %}
+        <li>
+          <a href="{% url 'composer_detail' composer.id %}">{{ composer.get_full_name }}</a>
+          [<a href="{% url 'composer_update' composer.pk %}">Edit</a>]
+          [<a href="{% url 'composer_delete' composer.pk %}">Delete</a>]
+
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No composers found.</p>
+  {% endif %}
+{% endblock %}

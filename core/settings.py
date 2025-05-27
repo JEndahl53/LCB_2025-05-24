@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "concerts.apps.ConcertsConfig",
     "library.apps.LibraryConfig",
+    "common.apps.CommonConfig",
     # 3rd party apps
     "neapolitan",
 ]

@@ -19,9 +19,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from neapolitan.views import CRUDView
-from django.views.generic import TemplateView
-from .views import HomePageView  # Import the view we created in core/views.py
-import concerts, library
+from common.views import HomePageView  # Import the view we created in core/views.py
+from library.models import (
+    Music,
+    RentingOrganization,
+    LoaningOrganization,
+    BorrowingOrganization,
+    Publisher,
+    Arranger,
+    Genre,
+)
+from concerts.models import Venue, Conductor, Guest, Concert
 
 
 # Neapolitan CRUDView models
@@ -30,7 +38,7 @@ class VenueView(CRUDView):
     View for the Venue model.
     """
 
-    model = concerts.models.Venue
+    model = Venue
     fields = ["name", "address", "city", "state", "zip_code", "map_link"]
 
 
@@ -39,8 +47,8 @@ class ConductorView(CRUDView):
     View for the Conductor model.
     """
 
-    model = concerts.models.Conductor
-    fields = ["title", "first_name", "middle_initial", "last_name", "description"]
+    model = Conductor
+    fields = ["title", "first_name", "middle_initial", "last_name", "comment"]
 
 
 class GuestView(CRUDView):
@@ -48,8 +56,8 @@ class GuestView(CRUDView):
     View for the Guest model.
     """
 
-    model = concerts.models.Guest
-    fields = ["title", "first_name", "middle_initial", "last_name", "description"]
+    model = Guest
+    fields = ["title", "first_name", "middle_initial", "last_name", "comment"]
 
 
 class ConcertView(CRUDView):
@@ -57,7 +65,7 @@ class ConcertView(CRUDView):
     View for the Concert model.
     """
 
-    model = concerts.models.Concert
+    model = Concert
     fields = [
         "title",
         "date",
@@ -74,7 +82,7 @@ class MusicPieceView(CRUDView):
     View for the MusicPiece model.
     """
 
-    model = library.models.Music
+    model = Music
     fields = [
         "title",
         "composer",
@@ -106,7 +114,7 @@ class RentingOrganizationView(CRUDView):
     View for the RentingOrganization model.
     """
 
-    model = library.models.RentingOrganization
+    model = RentingOrganization
     fields = ["name", "contact_person", "contact_email", "contact_phone", "description"]
 
 
@@ -115,7 +123,7 @@ class LoaningOrganizationView(CRUDView):
     View for the LoaningOrganization model.
     """
 
-    model = library.models.LoaningOrganization
+    model = LoaningOrganization
     fields = ["name", "contact_person", "contact_email", "contact_phone", "description"]
 
 
@@ -124,7 +132,7 @@ class BorrowingOrganizationView(CRUDView):
     View for the BorrowingOrganization model.
     """
 
-    model = library.models.BorrowingOrganization
+    model = BorrowingOrganization
     fields = [
         "name",
         "contact_person",
@@ -139,17 +147,8 @@ class PublisherView(CRUDView):
     View for the Publisher model.
     """
 
-    model = library.models.Publisher
+    model = Publisher
     fields = ["name", "contact_person", "contact_email", "contact_phone", "description"]
-
-
-class ComposerView(CRUDView):
-    """
-    View for the Composer model.
-    """
-
-    model = library.models.Composer
-    fields = ["title", "first_name", "middle_initial", "last_name", "description"]
 
 
 class ArrangerView(CRUDView):
@@ -157,8 +156,8 @@ class ArrangerView(CRUDView):
     View for the Arranger model.
     """
 
-    model = library.models.Arranger
-    fields = ["title", "first_name", "middle_initial", "last_name", "description"]
+    model = Arranger
+    fields = ["title", "first_name", "middle_initial", "last_name", "comment"]
 
 
 class GenreView(CRUDView):
@@ -166,7 +165,7 @@ class GenreView(CRUDView):
     View for the Genre model.
     """
 
-    model = library.models.Genre
+    model = Genre
     fields = ["name", "date_added", "date_updated"]
 
 
@@ -189,7 +188,6 @@ urlpatterns += MusicPieceView.get_urls()
 urlpatterns += RentingOrganizationView.get_urls()
 urlpatterns += LoaningOrganizationView.get_urls()
 urlpatterns += PublisherView.get_urls()
-urlpatterns += ComposerView.get_urls()
 urlpatterns += ArrangerView.get_urls()
 urlpatterns += GenreView.get_urls()
 urlpatterns += RentingOrganizationView.get_urls()

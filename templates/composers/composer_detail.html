@@ -1,0 +1,16 @@
+<!-- templates/persons/person_detail.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Person Detail{% endblock %}
+
+{% block content %}
+<h1>Person Detail</h1>
+
+{% if person %}
+  <h2>{{ person.full_name }}</h2>
+  <p>Description: {{ person.description }}</p>
+
+{% else %}
+  <p>Person not found.</p>
+{% endif %}

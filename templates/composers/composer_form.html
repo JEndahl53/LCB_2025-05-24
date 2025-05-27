@@ -1,0 +1,15 @@
+<!-- templates/composers/composer_form.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Composer Form{% endblock %}
+
+{% block content %}
+  <h1>{% if composer %}Edit Composer{% else %}Create Composer{% endif %}</h1>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{% if composer %}Update{% else %}Create{% endif %}</button>
+    <a href="{% url 'composers_list' %}">Cancel</a>
+  </form>
+{% endblock %}

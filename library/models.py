@@ -2,10 +2,10 @@
 
 from django.db import models
 from django.urls import reverse
-import core.models
+import common.models
 
 
-class Composer(core.models.PersonBase):
+class Composer(common.models.PersonBase):
     """
     Model representing a composer.
     """
@@ -25,7 +25,7 @@ class Composer(core.models.PersonBase):
         ordering = ["last_name", "first_name"]
 
 
-class Arranger(core.models.PersonBase):
+class Arranger(common.models.PersonBase):
     """
     Model representing an arranger.
     """
@@ -88,7 +88,34 @@ class Publisher(models.Model):
         ordering = ["name"]
 
 
-class LoaningOrganization(core.models.OrganizationBase):
+class OrganizationBase(models.Model):
+
+    LOANINGORGANIZATION = "LO"
+    BORROWINGORGANIZATION = "BO"
+    RENTINGORGANIZATION = "RO"
+    ORGANIZATION_TYPE_CHOICES = [
+        (LOANINGORGANIZATION, "Loaning Organization"),
+        (BORROWINGORGANIZATION, "Borrowing Organization"),
+        (RENTINGORGANIZATION, "Renting Organization"),
+    ]
+
+    name = models.CharField(max_length=100)
+    contact_person = models.CharField(max_length=100, blank=True, null=True)
+    contact_email = models.EmailField(blank=True, null=True)
+    contact_phone = models.CharField(max_length=15, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+class LoaningOrganization(OrganizationBase):
     """
     Model representing a loaning organization. "Loaned To" status
     """
@@ -105,7 +132,7 @@ class LoaningOrganization(core.models.OrganizationBase):
         ordering = ["name"]
 
 
-class BorrowingOrganization(core.models.OrganizationBase):
+class BorrowingOrganization(OrganizationBase):
     """
     Model representing a borrowing organization. "Borrowed From" status
     """
@@ -122,7 +149,7 @@ class BorrowingOrganization(core.models.OrganizationBase):
         ordering = ["name"]
 
 
-class RentingOrganization(core.models.OrganizationBase):
+class RentingOrganization(OrganizationBase):
     """
     Model representing a renting organization.
     """

@@ -1,10 +1,20 @@
 # core/views.py
 
-from django.views.generic import TemplateView
-from django.utils import timezone
+
 from django.db.models import Count
 from concerts.models import Concert, Venue
 from library.models import Music, Composer, Genre
+from common.models import PersonBase
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    TemplateView,
+)
+from django.urls import reverse_lazy
+from common.forms import PersonBaseForm
 
 
 class HomePageView(TemplateView):
@@ -25,23 +35,23 @@ class HomePageView(TemplateView):
         context["genre_count"] = Genre.objects.count()
 
         # Example of additional data aggregation
-        # context["most_performed_piece"] = (
-        #     Music.objects.annotate(num_performances=Count("concert"))
-        #     .order_by("-num_performances")
-        #     .first()
-        # )
-        # context["most_performed_piece"] = (
-        #     Music.objects.annotate(num_performances=Count("concert"))
-        #     .order_by("-num_performances")
-        #     .first()
-        # )
+        context["most_performed_piece"] = (
+            Music.objects.annotate(num_performances=Count("concerts"))
+            .order_by("-num_performances")
+            .first()
+        )
+        context["most_performed_piece"] = (
+            Music.objects.annotate(num_performances=Count("concerts"))
+            .order_by("-num_performances")
+            .first()
+        )
         # context["most_performed_genre"] = (
-        #     Genre.objects.annotate(num_performances=Count("music__concert"))
+        #     Genre.objects.annotate(num_performances=Count("music__concerts"))
         #     .order_by("-num_performances")
         #     .first()
         # )
         # context["most_performed_composer"] = (
-        #     Composer.objects.annotate(num_performances=Count("music__concert"))
+        #     Composer.objects.annotate(num_performances=Count("music__concerts"))
         #     .order_by("-num_performances")
         #     .first()
         # )

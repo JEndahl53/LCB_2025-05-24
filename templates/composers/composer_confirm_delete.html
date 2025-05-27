@@ -1,0 +1,16 @@
+<!-- templates/composers/composer_confirm_delete.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Delete Composer{% endblock %}
+
+{% block content %}
+  <h1>Delete Composer</h1>
+  <p>Are you sure you want to delete "{{ composer.full_name }}"?</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Confirm Delete</button>
+    <a href="{% url 'composers_list' %}">Cancel</a>
+  </form>
+{% endblock %}
