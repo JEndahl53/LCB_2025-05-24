@@ -2,22 +2,30 @@
 
 from django.db import models
 from django.urls import reverse
-import common.models
 
 
-class Composer(common.models.PersonBase):
-    """
-    Model representing a composer.
-    """
-
+class Composer(models.Model):
+    first_name = models.CharField(max_length=50, blank=True, null=True)
+    last_name = models.CharField(max_length=50)
+    comment = models.TextField(blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
     death_date = models.DateField(blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} ({self.birth_date} - {self.death_date})"
 
     def get_absolute_url(self):
         return reverse("composer_detail", args=[str(self.id)])
 
-    def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.birth_date} - {self.death_date})"
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
+    def get_sort_name(self):
+        if not {self.first_name}:
+            return f"{self.last_name}"
+        return f"{self.last_name}, {self.first_name}"
 
     class Meta:
         verbose_name = "Composer"
@@ -25,19 +33,28 @@ class Composer(common.models.PersonBase):
         ordering = ["last_name", "first_name"]
 
 
-class Arranger(common.models.PersonBase):
-    """
-    Model representing an arranger.
-    """
-
+class Arranger(models.Model):
+    first_name = models.CharField(max_length=50, blank=True, null=True)
+    last_name = models.CharField(max_length=50)
+    comment = models.TextField(blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
     death_date = models.DateField(blank=True, null=True)
-
-    def get_absolute_url(self):
-        return reverse("arranger_detail", args=[str(self.id)])
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.birth_date} - {self.death_date})"
+
+    def get_absolute_url(self):
+        return reverse("composer_detail", args=[str(self.id)])
+
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
+    def get_sort_name(self):
+        if not {self.first_name}:
+            return f"{self.last_name}"
+        return f"{self.last_name}, {self.first_name}"
 
     class Meta:
         verbose_name = "Arranger"
@@ -46,10 +63,6 @@ class Arranger(common.models.PersonBase):
 
 
 class Genre(models.Model):
-    """
-    Model representing a genre.
-    """
-
     name = models.CharField(max_length=100, unique=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -67,10 +80,6 @@ class Genre(models.Model):
 
 
 class Publisher(models.Model):
-    """
-    Model representing a publisher.
-    """
-
     name = models.CharField(max_length=100, unique=True)
     website = models.URLField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -88,37 +97,15 @@ class Publisher(models.Model):
         ordering = ["name"]
 
 
-class OrganizationBase(models.Model):
-
-    LOANINGORGANIZATION = "LO"
-    BORROWINGORGANIZATION = "BO"
-    RENTINGORGANIZATION = "RO"
-    ORGANIZATION_TYPE_CHOICES = [
-        (LOANINGORGANIZATION, "Loaning Organization"),
-        (BORROWINGORGANIZATION, "Borrowing Organization"),
-        (RENTINGORGANIZATION, "Renting Organization"),
-    ]
-
-    name = models.CharField(max_length=100)
+class LoaningOrganization(models.Model):
+    # Group that we loaned must to
+    name = models.CharField(max_length=100, unique=True)
     contact_person = models.CharField(max_length=100, blank=True, null=True)
     contact_email = models.EmailField(blank=True, null=True)
-    contact_phone = models.CharField(max_length=15, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    contact_phone = models.CharField(max_length=20, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
-
-
-class LoaningOrganization(OrganizationBase):
-    """
-    Model representing a loaning organization. "Loaned To" status
-    """
 
     def get_absolute_url(self):
         return reverse("loaning_organization_detail", args=[str(self.id)])
@@ -132,10 +119,15 @@ class LoaningOrganization(OrganizationBase):
         ordering = ["name"]
 
 
-class BorrowingOrganization(OrganizationBase):
-    """
-    Model representing a borrowing organization. "Borrowed From" status
-    """
+class BorrowingOrganization(models.Model):
+    # Group that we borrow music from
+    name = models.CharField(max_length=100, unique=True)
+    contact_person = models.CharField(max_length=100, blank=True, null=True)
+    contact_email = models.EmailField(blank=True, null=True)
+    contact_phone = models.CharField(max_length=20, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
         return reverse("borrowing_organization_detail", args=[str(self.id)])
@@ -149,17 +141,20 @@ class BorrowingOrganization(OrganizationBase):
         ordering = ["name"]
 
 
-class RentingOrganization(OrganizationBase):
-    """
-    Model representing a renting organization.
-    """
-
+class RentingOrganization(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    contact_person = models.CharField(max_length=100, blank=True, null=True)
+    contact_email = models.EmailField(blank=True, null=True)
+    contact_phone = models.CharField(max_length=20, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
     street_address = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(max_length=100, blank=True, null=True)
     zip_code = models.CharField(max_length=20, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
         return reverse("renting_organization_detail", args=[str(self.id)])
@@ -174,9 +169,6 @@ class RentingOrganization(OrganizationBase):
 
 
 class Music(models.Model):
-    """
-    Model representing a music piece.
-    """
 
     DIFFICULTY_CHOICES = [
         ("", "Select Difficulty"),
@@ -239,6 +231,7 @@ class Music(models.Model):
     expected_borrowing_return_date = models.DateField(blank=True, null=True)
     # Miscellaneous
     duration = models.DurationField(blank=True, null=True)
+    score_missing = models.BooleanField(default=False)
     comments = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)

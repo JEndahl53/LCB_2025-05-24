@@ -1,16 +1,16 @@
-<!-- templates/composers/composer_form.html -->
+<!-- templates/arrangers/arranger_form.html -->
 {% extends "base.html" %}
 {% load static %}
 {% load widget_tweaks %}
 
-{% block title %}{% if composer %}Edit{% else %}Create{% endif %} Composer{% endblock %}
+{% block title %}{% if arranger %}Edit{% else %}Create{% endif %} Composer{% endblock %}
 
 {% block content %}
   <div class="bg-white rounded-lg shadow-md p-6">
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-800">
-        <i class="fas fa-{% if composer %}edit{% else %}plus{% endif %} mr-2 text-blue-500"></i>
-        {% if composer %}Edit{% else %}Create{% endif %} Composer
+        <i class="fas fa-{% if arranger %}edit{% else %}plus{% endif %} mr-2 text-blue-500"></i>
+        {% if arranger %}Edit{% else %}Create{% endif %} Arranger
       </h1>
     </div>
 
@@ -111,13 +111,13 @@
       </div>
 
       <div class="flex justify-between pt-4 border-t">
-        <a href="{% url 'composers_list' %}"
+        <a href="{% url 'arrangers_list' %}"
            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition">
           <i class="fas fa-times mr-2"></i> Cancel
         </a>
         <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
-          <i class="fas fa-{% if composer %}save{% else %}plus{% endif %} mr-2"></i>
-          {% if composer %}Update{% else %}Create{% endif %} Composer
+          <i class="fas fa-{% if arranger %}save{% else %}plus{% endif %} mr-2"></i>
+          {% if arranger %}Update{% else %}Create{% endif %} Arranger
         </button>
       </div>
     </form>

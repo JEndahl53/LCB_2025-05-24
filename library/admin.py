@@ -87,7 +87,7 @@ class BorrowingOrganizationAdmin(admin.ModelAdmin):
         "contact_person",
         "contact_email",
         "contact_phone",
-        "description",
+        "notes",
     )
     search_fields = ("name",)
     ordering = ("name",)
@@ -105,7 +105,7 @@ class LoaningOrganizationAdmin(admin.ModelAdmin):
         "contact_person",
         "contact_email",
         "contact_phone",
-        "description",
+        "notes",
     )
     search_fields = ("name",)
     ordering = ("name",)
@@ -123,7 +123,7 @@ class RentingOrganizationAdmin(admin.ModelAdmin):
         "contact_person",
         "contact_email",
         "contact_phone",
-        "description",
+        "notes",
     )
     search_fields = ("name",)
     ordering = ("name",)

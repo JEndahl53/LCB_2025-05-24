@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "common.apps.CommonConfig",
     # 3rd party apps
     "neapolitan",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [

@@ -6,7 +6,7 @@
 {% block title %}Home - LCB Library{% endblock %}
 
 {% block content %}
-  <div class="bg-gradient-to-b from-blue-100 to white min-h-screen">
+  <div class="bg-gradient-to-b from-blue-100 to-white min-h-screen">
     <div class="container mx-auto px-4 py-8">
       <!-- Header section -->
       <div class="text-center mb-12">
@@ -128,25 +128,28 @@
                  class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
                 <span class="block text-lg font-semibold">Composers</span>
               </a>
-              <a href="{% url 'home' %}"
+              <a href="{% url 'arrangers_list' %}"
                  class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
                 <span class="block text-lg font-semibold">Arrangers</span>
               </a>
-              <a href="{% url 'home' %}" class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
+              <a href="{% url 'home' %}"
+                 class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
                 <span class="block text-lg font-semibold">Genres</span>
               </a>
               <a href="{% url 'home' %}"
                  class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
                 <span class="block text-lg font-semibold">Publishers</span>
               </a>
-              <a href="{% url 'home' %}" class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
+              <a href="{% url 'home' %}"
+                 class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
                 <span class="block text-lg font-semibold">Venues</span>
               </a>
               <a href="{% url 'home' %}"
                  class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
                 <span class="block text-lg font-semibold">Conductors</span>
               </a>
-              <a href="{% url 'home' %}" class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
+              <a href="{% url 'home' %}"
+                 class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
                 <span class="block text-lg font-semibold">Guests</span>
               </a>
             </div>
@@ -155,11 +158,7 @@
       {% endif %}
     </div>
   </div>
-  <footer class="bg-gray-800 text-white py-4">
-    <div class="container mx-auto text-center">
-      <p>&copy; 2025 LCB Library. All rights reserved.</p>
-    </div>
-  </footer>
+
 
 
 {% endblock %}
