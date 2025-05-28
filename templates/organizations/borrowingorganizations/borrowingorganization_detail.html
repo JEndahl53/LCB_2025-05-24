@@ -1,25 +1,25 @@
-<!-- templates/composers/composer_detail.html -->
+<!-- templates/organizations/borrowingorganization_detail.html -->
 {% extends "_base.html" %}
 {% load static %}
 
-{% block title %}{{ composer.get_full_name }} - Composer Detail{% endblock %}
+{% block title %}{{ borrowingorganization.get_full_name }} - Borrowing Organization Detail{% endblock %}
 
 {% block content %}
   <div class="bg-white rounded-lg shadow-md p-6">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-gray-800">
-        <i class="fas fa-user mr-2 text-blue-500"></i>Composer Detail
+        <i class="fas fa-user mr-2 text-blue-500"></i>Borrowing Organization Detail
       </h1>
       <div class="space-x-2">
-        <a href="{% url 'composer_update' composer.pk %}"
+        <a href="{% url 'borrowingorganization_update' borrowingorganization.pk %}"
            class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-md transition">
           <i class="fas fa-edit mr-1"></i> Edit
         </a>
-        <a href="{% url 'composer_delete' composer.pk %}"
+        <a href="{% url 'borrowingorganization_delete' borrowingorganization.pk %}"
            class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md transition">
           <i class="fas fa-trash-alt mr-1"></i> Delete
         </a>
-        <a href="{% url 'composers_list' %}"
+        <a href="{% url 'borrowingorganizations_list' %}"
            class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition">
           <i class="fas fa-arrow-left mr-1"></i> Back
         </a>
@@ -32,27 +32,28 @@
           <h2 class="text-lg font-semibold text-gray-700 mb-2">Basic Information</h2>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <p class="text-sm text-gray-500">Full Name</p>
-              <p class="font-medium">{{ composer.get_full_name }}</p>
+              <p class="text-sm text-gray-500">Organization Name</p>
+              <p class="font-medium">{{ borrowingorganization.name }}</p>
             </div>
-            <div>
-              <p class="text-sm text-gray-500">Life Span</p>
-              <p class="font-medium">
-                {% if composer.birth_date or composer.death_date %}
-                  {{ composer.birth_date|date:"F j, Y"|default:"Unknown" }} -
-                  {{ composer.death_date|date:"F j, Y"|default:"Present" }}
-                {% else %}
-                  Unknown
-                {% endif %}
-              </p>
-            </div>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Contact Person</p>
+            <p class="font-medium">{{ borrowingorganization.contact_person }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Contact Email</p>
+            <p class="font-medium">{{ borrowingorganization.contact_email }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Contact Phone</p>
+            <p class="font-medium">{{ borrowingorganization.contact_phone }}</p>
           </div>
         </div>
 
-        {% if composer.notes %}
+        {% if borrowingorganization.notes %}
           <div class="bg-gray-50 p-4 rounded-lg">
             <h2 class="text-lg font-semibold text-gray-700 mb-2">Notes</h2>
-            <p class="text-gray-700">{{ composer.notes }}</p>
+            <p class="text-gray-700">{{ borrowingorganization.notes }}</p>
           </div>
         {% endif %}
       </div>
@@ -60,9 +61,9 @@
       <div class="space-y-4">
         <div class="bg-blue-50 p-4 rounded-lg">
           <h2 class="text-lg font-semibold text-blue-700 mb-2">Works in Library</h2>
-          {% if composer.music_set.exists %}
+          {% if borrowingorganization.music_set.exists %}
             <ul class="divide-y divide-blue-100">
-              {% for music in composer.music_set.all %}
+              {% for music in borrowingorganization.music_set.all %}
                 <li class="py-2">
                   <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">{{ music.title }}</a>
                   <span class="text-gray-500 text-sm">{{ music.genre }}</span>
@@ -79,11 +80,11 @@
           <div class="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p class="text-gray-500">Date Added</p>
-              <p>{{ composer.date_added|date:"F j, Y" }}</p>
+              <p>{{ borrowingorganization.date_added|date:"F j, Y" }}</p>
             </div>
             <div>
               <p class="text-gray-500">Last Updated</p>
-              <p>{{ composer.date_updated|date:"F j, Y" }}</p>
+              <p>{{ borrowingorganization.date_updated|date:"F j, Y" }}</p>
             </div>
           </div>
         </div>

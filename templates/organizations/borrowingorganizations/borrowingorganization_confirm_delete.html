@@ -1,8 +1,8 @@
-<!-- templates/arrangers/arranger_confirm_delete.html -->
+<!-- templates/organizations/borrowingorganization_confirm_delete.html -->
 {% extends "_base.html" %}
 {% load static %}
 
-{% block title %}Delete Arranger{% endblock %}
+{% block title %}Delete Borrowing Organization{% endblock %}
 
 {% block content %}
   <div class="bg-white rounded-lg shadow-md p-6 max-w-lg mx-auto">
@@ -10,7 +10,7 @@
       <div class="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
         <i class="fas fa-trash-alt text-red-500 text-2xl"></i>
       </div>
-      <h1 class="text-2xl font-bold text-gray-800">Delete Arranger</h1>
+      <h1 class="text-2xl font-bold text-gray-800">Delete Borrowing Organization</h1>
     </div>
 
     <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
@@ -20,28 +20,26 @@
         </div>
         <div class="ml-3">
           <p class="text-sm text-red-700">
-            Are you sure you want to delete "{{ arranger.get_full_name }}"? This action cannot be undone.
+            Are you sure you want to delete "{{ borrowingorganization.name }}"? This action cannot be undone.
           </p>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 p-4 rounded-md mb-6">
-      <h2 class="text-lg font-medium text-gray-700 mb-2">Arranger Information</h2>
-      <p><strong>Name:</strong> {{ arranger.get_full_name }}</p>
-      {% if arranger.birth_date or arranger.death_date %}
-        <p><strong>Lifespan:</strong> {{ arranger.birth_date|date:"Y"|default:"?" }}
-          - {{ arranger.death_date|date:"Y"|default:"present" }}</p>
-      {% endif %}
-      {% if arranger.music_set.exists %}
-        <p class="text-red-600 mt-2"><strong>Warning:</strong> This arranger has {{ arranger.music_set.count }} music
+      <h2 class="text-lg font-medium text-gray-700 mb-2">Borrowing Organization Information</h2>
+      <p><strong>Name:</strong> {{ borrowingorganization.name }}</p>
+
+      {% if borrowingorganization.music_set.exists %}
+        <p class="text-red-600 mt-2"><strong>Warning:</strong> This borrowing organization
+          has {{ borrowingorganization.music_set.count }} music
           pieces in the library.</p>
       {% endif %}
     </div>
 
     <form method="post" class="flex justify-between">
       {% csrf_token %}
-      <a href="{% url 'arrangers_list' %}"
+      <a href="{% url 'borrowingorganizations_list' %}"
          class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition">
         <i class="fas fa-arrow-left mr-2"></i> Cancel
       </a>

@@ -22,7 +22,7 @@ class ComposerAdmin(admin.ModelAdmin):
     list_display = (
         "first_name",
         "last_name",
-        "comment",
+        "notes",
         "birth_date",
         "death_date",
     )
@@ -40,7 +40,7 @@ class ArrangerAdmin(admin.ModelAdmin):
     list_display = (
         "first_name",
         "last_name",
-        "comment",
+        "notes",
         "birth_date",
         "death_date",
     )

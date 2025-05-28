@@ -1,16 +1,16 @@
-<!-- templates/composers/composer_form.html -->
+<!-- templates/loaningorganizations/loaningorganization_form.html -->
 {% extends "_base.html" %}
 {% load static %}
 {% load widget_tweaks %}
 
-{% block title %}{% if composer %}Edit{% else %}Create{% endif %} Composer{% endblock %}
+{% block title %}{% if loaningorganization %}Edit{% else %}Create{% endif %} Loaning Organization{% endblock %}
 
 {% block content %}
   <div class="bg-white rounded-lg shadow-md p-6">
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-800">
-        <i class="fas fa-{% if composer %}edit{% else %}plus{% endif %} mr-2 text-blue-500"></i>
-        {% if composer %}Edit{% else %}Create{% endif %} Composer
+        <i class="fas fa-{% if loaningorganization %}edit{% else %}plus{% endif %} mr-2 text-blue-500"></i>
+        {% if loaningorganization %}Edit{% else %}Create{% endif %} Loaning Organization
       </h1>
     </div>
 
@@ -38,47 +38,44 @@
           <h2 class="text-lg font-medium text-gray-700 border-b pb-2">Personal Information</h2>
 
           <div class="grid grid-cols-2 gap-4">
-            <div class="form-group{% if form.first_name.errors %} has-error{% endif %}">
-              <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                First Name
+            <div class="form-group{% if form.name.errors %} has-error{% endif %}">
+              <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Name *
               </label>
-              {{ form.first_name|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.first_name.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.first_name.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.last_name.errors %} has-error{% endif %}">
-              <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Last Name *
-              </label>
-              {{ form.last_name|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.last_name.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.last_name.errors.0 }}</p>
+              {{ form.name|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.name.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.name.errors.0 }}</p>
               {% endif %}
             </div>
           </div>
+          <div class="form-group{% if form.contact_person.errors %} has-error{% endif %}">
+            <label for="{{ form.contact_person.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Contact Person
+            </label>
+            {{ form.contact_person|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+            {% if form.contact_person.errors %}
+              <p class="text-red-600 text-xs mt-1">{{ form.contact_person.errors.0 }}</p>
+            {% endif %}
+          </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div class="form-group{% if form.birth_date.errors %} has-error{% endif %}">
-              <label for="{{ form.birth_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Birth Date
-              </label>
-              {{ form.birth_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.birth_date.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.birth_date.errors.0 }}</p>
-              {% endif %}
-            </div>
+          <div class="form-group{% if form.contact_email.errors %} has-error{% endif %}">
+            <label for="{{ form.contact_email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Contact Email
+            </label>
+            {{ form.contact_email|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+            {% if form.contact_email.errors %}
+              <p class="text-red-600 text-xs mt-1">{{ form.contact_email.errors.0 }}</p>
+            {% endif %}
+          </div>
 
-            <div class="form-group{% if form.death_date.errors %} has-error{% endif %}">
-              <label for="{{ form.death_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Death Date
-              </label>
-              {{ form.death_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.death_date.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.death_date.errors.0 }}</p>
-              {% endif %}
-            </div>
+          <div class="form-group{% if form.contact_phone.errors %} has-error{% endif %}">
+            <label for="{{ form.contact_phone.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Contact Phone
+            </label>
+            {{ form.contact_phone|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+            {% if form.contact_phone.errors %}
+              <p class="text-red-600 text-xs mt-1">{{ form.contact_phone.errors.0 }}</p>
+            {% endif %}
           </div>
         </div>
 
@@ -111,13 +108,13 @@
       </div>
 
       <div class="flex justify-between pt-4 border-t">
-        <a href="{% url 'composers_list' %}"
+        <a href="{% url 'loaningorganizations_list' %}"
            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition">
           <i class="fas fa-times mr-2"></i> Cancel
         </a>
         <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
-          <i class="fas fa-{% if composer %}save{% else %}plus{% endif %} mr-2"></i>
-          {% if composer %}Update{% else %}Create{% endif %} Composer
+          <i class="fas fa-{% if loaningorganization %}save{% else %}plus{% endif %} mr-2"></i>
+          {% if loaningorganization %}Update{% else %}Create{% endif %} Loaning Organization
         </button>
       </div>
     </form>

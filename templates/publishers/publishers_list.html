@@ -1,52 +1,45 @@
-<!-- templates/composers/composers_list.html -->
+<!-- templates/publishers/publishers_list.html -->
 {% extends "_base.html" %}
 {% load static %}
 
-{% block title %}Composers List{% endblock %}
+{% block title %}Publishers List{% endblock %}
 
 {% block content %}
   <div class="bg-white rounded-lg shadow-md p-6">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-gray-800">
-        <i class="fas fa-user-edit mr-2 text-blue-500"></i>Composers List
+        <i class="fas fa-user-edit mr-2 text-blue-500"></i>Publishers List
       </h1>
-      <a href="{% url 'composer_create' %}"
+      <a href="{% url 'publisher_create' %}"
          class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition flex items-center">
-        <i class="fas fa-plus mr-2"></i> Add Composer
+        <i class="fas fa-plus mr-2"></i> Add Publisher
       </a>
     </div>
 
     <div class="overflow-x-auto">
-      {% if composers %}
+      {% if publishers %}
         <table class="min-w-full bg-white">
           <thead class="bg-gray-100 text-gray-800">
           <tr>
             <th class="py-3 px-4 text-left">Name</th>
-            <th class="py-3 px-4 text-left">Dates</th>
             <th class="py-3 px-4 text-center">Actions</th>
           </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-          {% for composer in composers %}
+          {% for publisher in publishers %}
             <tr class="hover:bg-gray-50">
               <td class="py-3 px-4">
-                <a href="{% url 'composer_detail' composer.id %}" class="text-blue-600 hover:text-blue-800 font-medium">
-                  {{ composer.get_sort_name }}
+                <a href="{% url 'publisher_detail' publisher.id %}"
+                   class="text-blue-600 hover:text-blue-800 font-medium">
+                  {{ publisher.name }}
                 </a>
               </td>
-              <td class="py-3 px-4 text-gray-600">
-                {% if composer.birth_date or composer.death_date %}
-                  {{ composer.birth_date|date:"Y"|default:"?" }} - {{ composer.death_date|date:"Y"|default:"present" }}
-                {% else %}
-                  <span class="text-gray-400">No dates available</span>
-                {% endif %}
-              </td>
               <td class="py-3 px-4 text-center">
-                <a href="{% url 'composer_update' composer.pk %}" class="text-yellow-600 hover:text-yellow-800 mx-1"
+                <a href="{% url 'publisher_update' publisher.pk %}" class="text-yellow-600 hover:text-yellow-800 mx-1"
                    title="Edit">
                   <i class="fas fa-edit"></i>
                 </a>
-                <a href="{% url 'composer_delete' composer.pk %}" class="text-red-600 hover:text-red-800 mx-1"
+                <a href="{% url 'publisher_delete' publisher.pk %}" class="text-red-600 hover:text-red-800 mx-1"
                    title="Delete">
                   <i class="fas fa-trash-alt"></i>
                 </a>
@@ -58,10 +51,10 @@
       {% else %}
         <div class="text-center py-8 bg-gray-50 rounded-lg">
           <i class="fas fa-info-circle text-gray-400 text-4xl mb-4"></i>
-          <p class="text-gray-600">No composers found in the database.</p>
-          <a href="{% url 'composer_create' %}"
+          <p class="text-gray-600">No publishers found in the database.</p>
+          <a href="{% url 'publisher_create' %}"
              class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
-            <i class="fas fa-plus mr-2"></i> Add Your First Composer
+            <i class="fas fa-plus mr-2"></i> Add Your First Publisher
           </a>
         </div>
       {% endif %}

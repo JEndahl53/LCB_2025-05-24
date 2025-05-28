@@ -1,5 +1,5 @@
 <!-- templates/arrangers/arranger_form.html -->
-{% extends "base.html" %}
+{% extends "_base.html" %}
 {% load static %}
 {% load widget_tweaks %}
 
@@ -86,13 +86,13 @@
         <div class="space-y-4">
           <h2 class="text-lg font-medium text-gray-700 border-b pb-2">Additional Information</h2>
 
-          <div class="form-group{% if form.comment.errors %} has-error{% endif %}">
-            <label for="{{ form.comment.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-              Comments/Notes
+          <div class="form-group{% if form.notes.errors %} has-error{% endif %}">
+            <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Notes
             </label>
-            {{ form.comment|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-            {% if form.comment.errors %}
-              <p class="text-red-600 text-xs mt-1">{{ form.comment.errors.0 }}</p>
+            {{ form.notes|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+            {% if form.notes.errors %}
+              <p class="text-red-600 text-xs mt-1">{{ form.notes.errors.0 }}</p>
             {% endif %}
           </div>
 

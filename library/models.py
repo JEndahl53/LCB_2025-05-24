@@ -7,7 +7,7 @@ from django.urls import reverse
 class Composer(models.Model):
     first_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
-    comment = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
     death_date = models.DateField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -36,7 +36,7 @@ class Composer(models.Model):
 class Arranger(models.Model):
     first_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
-    comment = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
     death_date = models.DateField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -64,6 +64,7 @@ class Arranger(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    notes = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
@@ -82,6 +83,7 @@ class Genre(models.Model):
 class Publisher(models.Model):
     name = models.CharField(max_length=100, unique=True)
     website = models.URLField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
@@ -232,7 +234,7 @@ class Music(models.Model):
     # Miscellaneous
     duration = models.DurationField(blank=True, null=True)
     score_missing = models.BooleanField(default=False)
-    comments = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 

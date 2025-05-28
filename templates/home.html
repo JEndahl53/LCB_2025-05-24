@@ -1,6 +1,6 @@
 <!-- templates/home.html -->
 
-{% extends "base.html" %}
+{% extends "_base.html" %}
 {% load static %}
 
 {% block title %}Home - LCB Library{% endblock %}
@@ -132,11 +132,11 @@
                  class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
                 <span class="block text-lg font-semibold">Arrangers</span>
               </a>
-              <a href="{% url 'home' %}"
+              <a href="{% url 'genres_list' %}"
                  class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
                 <span class="block text-lg font-semibold">Genres</span>
               </a>
-              <a href="{% url 'home' %}"
+              <a href="{% url 'publishers_list' %}"
                  class="bg-gray-100 hover:bg-gray-200 p-4 rounded transition text-center">
                 <span class="block text-lg font-semibold">Publishers</span>
               </a>
