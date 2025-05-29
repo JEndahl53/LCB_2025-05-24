@@ -16,6 +16,7 @@ from .forms import (
     LoaningOrganizationForm,
     BorrowingOrganizationForm,
     RentingOrganizationForm,
+    MusicForm,
 )
 from .models import (
     Composer,
@@ -25,8 +26,16 @@ from .models import (
     LoaningOrganization,
     BorrowingOrganization,
     RentingOrganization,
+    Music,
 )
 from django.urls import reverse_lazy
+from django.views.generic.edit import ModelFormMixin
+
+# for javascript searches
+from django.http import JsonResponse
+from django.views.generic import View
+from django.core import serializers
+import json
 
 
 # Composer Views
@@ -356,3 +365,129 @@ class RentingOrganizationDeleteView(DeleteView):
 
     def get_queryset(self):
         return RentingOrganization.objects.all()
+
+
+# Music views
+class MusicListView(ListView):
+    model = Music
+    template_name = "music/music_list.html"
+    context_object_name = "music_list"
+
+    def get_queryset(self):
+        return Music.objects.all()
+
+
+class MusicDetailView(DetailView):
+    model = Music
+    template_name = "music/music_detail.html"
+    context_object_name = "music"
+
+    def get_queryset(self):
+        return Music.objects.all()
+
+
+class MusicCreateView(CreateView):
+    model = Music
+    form_class = MusicForm
+    template_name = "music/music_form.html"
+    success_url = reverse_lazy("music_list")
+
+    def form_valid(self, form):
+        # Save the main form first
+        music_instance = form.save(commit=False)
+        music_instance.save()
+
+        # Handle many-to-many relationships manually using POST data
+        composer_ids = self.request.POST.getlist("composer")
+        arranger_ids = self.request.POST.getlist("arranger")
+        genre_ids = self.request.POST.getlist("genre")
+
+        # Set the relationships explicitly
+        music_instance.composer.set(composer_ids if composer_ids else [])
+        music_instance.arranger.set(arranger_ids if arranger_ids else [])
+        music_instance.genre.set(genre_ids if genre_ids else [])
+
+        # Call the parent's form_valid to handle the redirect
+        self.object = music_instance
+        return super(ModelFormMixin, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Get all items for JavaScript
+        context["all_composers"] = list(
+            Composer.objects.values("id", "first_name", "last_name")
+        )
+        context["all_arrangers"] = list(
+            Arranger.objects.values("id", "first_name", "last_name")
+        )
+        context["all_genres"] = list(Genre.objects.values("id", "name"))
+
+        # For create view, no selected items initially
+        context["selected_composers"] = []
+        context["selected_arrangers"] = []
+        context["selected_genres"] = []
+
+        return context
+
+
+class MusicUpdateView(UpdateView):
+    model = Music
+    form_class = MusicForm
+    template_name = "music/music_form.html"
+    success_url = reverse_lazy("music_list")
+
+    def get_queryset(self):
+        return Music.objects.all()
+
+    def form_valid(self, form):
+        # Save the main form first, but don't commit M2M relationships yet
+        music_instance = form.save(commit=False)
+        music_instance.save()
+
+        # Handle many-to-many relationships manually using POST data
+        composer_ids = self.request.POST.getlist("composer")
+        arranger_ids = self.request.POST.getlist("arranger")
+        genre_ids = self.request.POST.getlist("genre")
+
+        # Set the relationships explicitly
+        music_instance.composer.set(composer_ids if composer_ids else [])
+        music_instance.arranger.set(arranger_ids if arranger_ids else [])
+        music_instance.genre.set(genre_ids if genre_ids else [])
+
+        # Call the parent's form_valid to handle the redirect
+        self.object = music_instance
+        return super(ModelFormMixin, self).form_valid(form)
+
+    # Adding Javascript
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Get all composers, arrangers, and genres for the javascript
+        context["all_composers"] = list(
+            Composer.objects.values("id", "first_name", "last_name")
+        )
+        context["all_arrangers"] = list(
+            Arranger.objects.values("id", "first_name", "last_name")
+        )
+        context["all_genres"] = list(Genre.objects.values("id", "name"))
+
+        # for update view, get currently selected items
+        context["selected_composers"] = list(
+            self.object.composer.values("id", "first_name", "last_name")
+        )
+        context["selected_arrangers"] = list(
+            self.object.arranger.values("id", "first_name", "last_name")
+        )
+        context["selected_genres"] = list(self.object.genre.values("id", "name"))
+
+        return context
+
+
+class MusicDeleteView(DeleteView):
+    model = Music
+    template_name = "music/music_confirm_delete.html"
+    success_url = reverse_lazy("music_list")
+
+    def get_queryset(self):
+        return Music.objects.all()

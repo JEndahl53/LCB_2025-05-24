@@ -71,6 +71,8 @@ class MusicForm(forms.ModelForm):
         fields = "__all__"
 
         widgets = {
+            "difficulty": forms.Select(attrs={"class": "form-control"}),
+            "status": forms.Select(attrs={"class": "form-control"}),
             "date_acquired": forms.DateInput(attrs={"type": "date"}),
             "loan_start_date": forms.DateInput(attrs={"type": "date"}),
             "expected_return_date": forms.DateInput(attrs={"type": "date"}),

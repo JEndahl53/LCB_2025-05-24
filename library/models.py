@@ -173,7 +173,7 @@ class RentingOrganization(models.Model):
 class Music(models.Model):
 
     DIFFICULTY_CHOICES = [
-        ("", "Select Difficulty"),
+        ("", "--------"),
         ("E", "Easy"),
         ("ME", "Moderately Easy"),
         ("M", "Moderate"),
@@ -181,7 +181,7 @@ class Music(models.Model):
         ("D", "Difficult"),
     ]
     STATUS_CHOICES = [
-        ("", "Select Status"),
+        ("", "-------"),
         ("O", "Owned"),
         ("L", "Loaned To"),
         ("R", "Rented"),
@@ -239,7 +239,7 @@ class Music(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return reverse("music_piece_detail", args=[str(self.id)])
+        return reverse("music_detail", args=[str(self.id)])
 
     def __str__(self):
         return self.title

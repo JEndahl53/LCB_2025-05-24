@@ -1,0 +1,613 @@
+<!-- templates/musics/music_form.html -->
+{% extends "_base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}{% if music %}Edit{% else %}Create{% endif %} a Piece of Music{% endblock %}
+
+{% block content %}
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">
+        <i class="fas fa-{% if music %}edit{% else %}plus{% endif %} mr-2 text-blue-500"></i>
+        {% if music %}Edit{% else %}Create{% endif %} a Piece of Music
+      </h1>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+
+      {% if form.errors %}
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <i class="fas fa-exclamation-circle text-red-500"></i>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-red-700">
+                Please correct the errors below.
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Left Column -->
+        <div class="space-y-4">
+          <h2 class="text-lg font-medium text-gray-700 border-b pb-2">Music Information</h2>
+
+          <!-- Title -->
+          <div class="form-group{% if form.title.errors %} has-error{% endif %}">
+            <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Title *
+            </label>
+            {{ form.title|add_class:"text-lg w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+            {% if form.title.errors %}
+              <p class="text-red-600 text-xs mt-1">{{ form.title.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Composer Section -->
+          <div class="form-group">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Composers</label>
+            <div class="grid grid-cols-2 gap-4 border rounded-lg p-4 bg-gray-50">
+              <!-- Selected Composers -->
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Selected Composers</h4>
+                <div id="selected-composers-container"
+                     class="min-h-[100px] border border-gray-200 rounded bg-white p-2 space-y-1"></div>
+              </div>
+              <!-- Available Composers -->
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Available Composers</h4>
+                <input type="text" id="composer-search" aria-label="Search composers" placeholder="Search composers..."
+                       class="w-full mb-2 px-3 py-1 border border-gray-300 rounded text-sm">
+                <div id="available-composers"
+                     class="min-h-[100px] max-h-[200px] overflow-y-auto border border-gray-200 rounded bg-white p-2 space-y-1"></div>
+              </div>
+            </div>
+            <!-- Hidden field for form submission -->
+            <select id="id_composer" aria-label="hidden composer ids" name="composer" multiple style="display:none">
+              {% for composer in form.composer.field.queryset %}
+                <option value="{{ composer.id }}">{{ composer }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Arranger Section -->
+          <div class="form-group">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Arrangers</label>
+            <div class="grid grid-cols-2 gap-4 border rounded-lg p-4 bg-gray-50">
+              <!-- Selected Arrangers -->
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Selected Arrangers</h4>
+                <div id="selected-arrangers-container"
+                     class="min-h-[100px] border border-gray-200 rounded bg-white p-2 space-y-1"></div>
+              </div>
+              <!-- Available Arrangers -->
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Available Arrangers</h4>
+                <input type="text" id="arranger-search" aria-label="arranger search" placeholder="Search arrangers..."
+                       class="w-full mb-2 px-3 py-1 border border-gray-300 rounded text-sm">
+                <div id="available-arrangers"
+                     class="min-h-[100px] max-h-[200px] overflow-y-auto border border-gray-200 rounded bg-white p-2 space-y-1"></div>
+              </div>
+            </div>
+            <!-- Hidden field for form submission -->
+            <select id="id_arranger" name="arranger" aria-label="hidden arranger ids" multiple style="display:none">
+              {% for arranger in form.arranger.field.queryset %}
+                <option value="{{ arranger.id }}">{{ arranger }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Genre Section -->
+          <div class="form-group">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Genres</label>
+            <div class="grid grid-cols-2 gap-4 border rounded-lg p-4 bg-gray-50">
+              <!-- Selected Genres -->
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Selected Genres</h4>
+                <div id="selected-genres-container"
+                     class="min-h-[100px] border border-gray-200 rounded bg-white p-2 space-y-1"></div>
+
+              </div>
+              <!-- Available Genres -->
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Available Genres</h4>
+                <input type="text" id="genre-search" aria-label="genre search" placeholder="Search genres..."
+                       class="w-full mb-2 px-3 py-1 border border-gray-300 rounded text-sm">
+                <div id="available-genres"
+                     class="min-h-[100px] max-h-[200px] overflow-y-auto border border-gray-200 rounded bg-white p-2 space-y-1"></div>
+
+              </div>
+            </div>
+            <!-- Hidden field for form submission -->
+            <select id="id_genre" name="genre" aria-label="hidden genre ids" multiple style="display:none">
+              {% for genre in form.genre.field.queryset %}
+                <option value="{{ genre.id }}">{{ genre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Right Column - other fields -->
+        <div class="space-y-4">
+          <h2 class="text-lg font-medium text-gray-700 border-b pb-2">Additional Details</h2>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-group{% if form.location_drawer.errors %} has-error{% endif %}">
+              <label for="{{ form.location_drawer.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Drawer
+              </label>
+              {{ form.location_drawer|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.location_drawer.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.location_drawer.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.location_number.errors %} has-error{% endif %}">
+              <label for="{{ form.location_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Number
+              </label>
+              {{ form.location_number|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.location_number.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.location_number.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.difficulty.errors %} has-error{% endif %}">
+              <label for="{{ form.difficulty.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Difficulty
+              </label>
+              {{ form.difficulty|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.difficulty.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.difficulty.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.status.errors %} has-error{% endif %}">
+              <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              {{ form.status|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.status.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.status.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.publisher.errors %} has-error{% endif %}">
+              <label for="{{ form.publisher.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Publisher
+              </label>
+              {{ form.publisher|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.publisher.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.publisher.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.year_published.errors %} has-error{% endif %}">
+              <label for="{{ form.year_published.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Year Published
+              </label>
+              {{ form.year_published|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.year_published.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.year_published.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.date_acquired.errors %} has-error{% endif %}">
+              <label for="{{ form.date_acquired.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Date Acquired
+              </label>
+              {{ form.date_acquired|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.date_acquired.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.date_acquired.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.purchase_price.errors %} has-error{% endif %}">
+              <label for="{{ form.purchase_price.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Purchase Price
+              </label>
+              {{ form.purchase_price|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.purchase_price.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.purchase_price.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.purchase_source.errors %} has-error{% endif %}">
+              <label for="{{ form.purchase_source.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Purchase Source
+              </label>
+              {{ form.purchase_source|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.purchase_source.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.purchase_source.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.loaning_organization.errors %} has-error{% endif %}">
+              <label for="{{ form.loaning_organization.id_for_label }}"
+                     class="block text-sm font-medium text-gray-700 mb-1">
+                Loaning Organization (Loaned to:)
+              </label>
+              {{ form.loaning_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.loaning_organization.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.loaning_organization.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.loan_start_date.errors %} has-error{% endif %}">
+              <label for="{{ form.loan_start_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Loan Start Date
+              </label>
+              {{ form.loan_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.loan_start_date.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.loan_start_date.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.expected_return_date.errors %} has-error{% endif %}">
+              <label for="{{ form.expected_return_date.id_for_label }}"
+                     class="block text-sm font-medium text-gray-700 mb-1">
+                Expected Return Date
+              </label>
+              {{ form.expected_return_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.expected_return_date.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.expected_return_date.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.renting_organization.errors %} has-error{% endif %}">
+              <label for="{{ form.renting_organization.id_for_label }}"
+                     class="block text-sm font-medium text-gray-700 mb-1">
+                Renting Organization
+              </label>
+              {{ form.renting_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.renting_organization.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.renting_organization.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.rental_start_date.errors %} has-error{% endif %}">
+              <label for="{{ form.rental_start_date.id_for_label }}"
+                     class="block text-sm font-medium text-gray-700 mb-1">
+                Rental Start Date
+              </label>
+              {{ form.rental_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.rental_start_date.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.rental_start_date.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.rental_end_date.errors %} has-error{% endif %}">
+              <label for="{{ form.rental_end_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Rental End Date
+              </label>
+              {{ form.rental_end_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.rental_end_date.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.rental_end_date.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.rental_fee.errors %} has-error{% endif %}">
+              <label for="{{ form.rental_fee.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Rental Fee
+              </label>
+              {{ form.rental_fee|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.rental_fee.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.rental_fee.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.borrowing_organization.errors %} has-error{% endif %}">
+              <label for="{{ form.borrowing_organization.id_for_label }}"
+                     class="block text-sm font-medium text-gray-700 mb-1">
+                Borrowing Organization (Borrowed from:)
+              </label>
+              {{ form.borrowing_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.borrowing_organization.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.borrowing_organization.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.borrowing_start_date.errors %} has-error{% endif %}">
+              <label for="{{ form.borrowing_start_date.id_for_label }}"
+                     class="block text-sm font-medium text-gray-700 mb-1">
+                Borrowing Start Date
+              </label>
+              {{ form.borrowing_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.borrowing_start_date.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.borrowing_start_date.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.expected_borrowing_return_date.errors %} has-error{% endif %}">
+              <label for="{{ form.expected_borrowing_return_date.id_for_label }}"
+                     class="block text-sm font-medium text-gray-700 mb-1">
+                Borrowing Return Date
+              </label>
+              {{ form.expected_borrowing_return_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.expected_borrowing_return_date.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.expected_borrowing_return_date.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.duration.errors %} has-error{% endif %}">
+              <label for="{{ form.duration.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Piece duration
+              </label>
+              {{ form.duration|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.duration.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.duration.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.score_missing.errors %} has-error{% endif %}">
+              <div class="flex items-center space-x-2">
+                {{ form.score_missing|add_class:"h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" }}
+                <label for="{{ form.score_missing.id_for_label }}" class="text-sm font-medium text-gray-700">
+                  Missing Score
+                </label>
+              </div>
+              {% if form.score_missing.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.score_missing.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="form-group{% if form.notes.errors %} has-error{% endif %}">
+              <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Notes
+              </label>
+              {{ form.notes|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.notes.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.notes.errors.0 }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between pt-4 border-t">
+          <a href="{% url 'music_list' %}"
+             class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition">
+            <i class="fas fa-times mr-2"></i> Cancel
+          </a>
+          <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
+            <i class="fas fa-{% if music %}save{% else %}plus{% endif %} mr-2"></i>
+            {% if music %}Update{% else %}Create{% endif %} a Piece
+          </button>
+        </div>
+    </form>
+  </div>
+
+  <!-- Pass data to JavaScript -->
+  {{ all_composers|json_script:"all-composers" }}
+  {{ all_arrangers|json_script:"all-arrangers" }}
+  {{ all_genres|json_script:"all-genres" }}
+  {{ selected_composers|json_script:"selected-composers" }}
+  {{ selected_arrangers|json_script:"selected-arrangers" }}
+  {{ selected_genres|json_script:"selected-genres" }}
+
+  <script>
+      // Dual list management class
+      class DualListManager {
+          constructor(config) {
+              this.selectedContainer = document.getElementById(config.selectedContainer);
+              this.availableContainer = document.getElementById(config.availableContainer);
+              this.searchInput = document.getElementById(config.searchInput);
+              this.hiddenSelect = document.getElementById(config.hiddenSelect);
+              this.getName = config.getName;
+              this.allItems = config.allItems;
+              this.selectedItems = new Map();
+              this.filteredItems = [...this.allItems];
+              this.preSelectedItems = config.preSelectedItems || [];
+
+              this.init();
+          }
+
+          init() {
+              // Set up search functionality
+              this.searchInput.addEventListener('input', (e) => {
+                  this.filterItems(e.target.value);
+              });
+
+              // Initialize with selected items
+              this.loadSelectedItems();
+              this.renderAll();
+          }
+
+          loadSelectedItems() {
+              // Load pre-selected items
+              this.preSelectedItems.forEach(item => {
+                  this.selectedItems.set(item.id, item);
+              });
+
+              // Remove selected items from available items
+              this.filteredItems = this.allItems.filter(item =>
+                  !this.selectedItems.has(item.id)
+              );
+
+              // Update hidden select to reflect selected items
+              this.updateHiddenSelect();
+          }
+
+          filterItems(searchTerm) {
+              const term = searchTerm.toLowerCase();
+              this.filteredItems = this.allItems.filter(item =>
+                  this.getName(item).toLowerCase().includes(term) &&
+                  !this.selectedItems.has(item.id)
+              );
+              this.renderAvailable();
+          }
+
+          addItem(item) {
+              this.selectedItems.set(item.id, item);
+              this.filteredItems = this.filteredItems.filter(i => i.id !== item.id);
+              this.updateHiddenSelect();
+              this.renderAll();
+          }
+
+          removeItem(itemId) {
+              const item = this.selectedItems.get(itemId);
+              if (item) {
+                  this.selectedItems.delete(itemId);
+                  // Re-filter to check if item should appear in available list
+                  this.filterItems(this.searchInput.value);
+                  this.updateHiddenSelect();
+                  this.renderAll();
+              }
+          }
+
+          updateHiddenSelect() {
+              // Clear existing selections
+              Array.from(this.hiddenSelect.options).forEach(option => {
+                  option.selected = false;
+              });
+
+              // Set selections for selected items
+              this.selectedItems.forEach((item, itemId) => {
+                  const option = this.hiddenSelect.querySelector(`option[value="${itemId}"]`);
+                  if (option) {
+                      option.selected = true;
+                  }
+              });
+          }
+
+          renderSelected() {
+              this.selectedContainer.innerHTML = '';
+
+              if (this.selectedItems.size === 0) {
+                  this.selectedContainer.innerHTML = '<div class="text-gray-400 text-sm italic">No items selected</div>';
+                  return;
+              }
+
+              this.selectedItems.forEach(item => {
+                  const div = document.createElement('div');
+                  div.className = 'flex items-center justify-between bg-blue-50 border border-blue-200 rounded px-2 py-1 text-sm';
+                  div.innerHTML = `
+                <span>${this.getName(item)}</span>
+                <button type="button" class="text-red-500 hover:text-red-700 ml-2" onclick="removeItem_${this.hiddenSelect.id}(${item.id})">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+                  this.selectedContainer.appendChild(div);
+              });
+          }
+
+          renderAvailable() {
+              this.availableContainer.innerHTML = '';
+
+              if (this.filteredItems.length === 0) {
+                  this.availableContainer.innerHTML = '<div class="text-gray-400 text-sm italic">No items available</div>';
+                  return;
+              }
+
+              this.filteredItems.forEach(item => {
+                  const div = document.createElement('div');
+                  div.className = 'cursor-pointer hover:bg-blue-50 border border-transparent hover:border-blue-200 rounded px-2 py-1 text-sm';
+                  div.innerHTML = this.getName(item);
+                  div.onclick = () => this.addItem(item);
+                  this.availableContainer.appendChild(div);
+              });
+          }
+
+          renderAll() {
+              this.renderSelected();
+              this.renderAvailable();
+          }
+      }
+
+      // Initialize when DOM is loaded
+      document.addEventListener('DOMContentLoaded', function () {
+          try {
+              // Get DOM elements
+              const allComposersElement = document.getElementById('all-composers');
+              const allArrangersElement = document.getElementById('all-arrangers');
+              const allGenresElement = document.getElementById('all-genres');
+              const selectedComposersElement = document.getElementById('selected-composers');
+              const selectedArrangersElement = document.getElementById('selected-arrangers');
+              const selectedGenresElement = document.getElementById('selected-genres');
+
+              // Check if all elements exist
+              if (!allComposersElement || !allArrangersElement || !allGenresElement ||
+                  !selectedComposersElement || !selectedArrangersElement || !selectedGenresElement) {
+                  console.error('One or more required elements are missing');
+                  return;
+              }
+
+              // Parse JSON data
+              const allComposers = JSON.parse(allComposersElement.textContent);
+              const allArrangers = JSON.parse(allArrangersElement.textContent);
+              const allGenres = JSON.parse(allGenresElement.textContent);
+              const selectedComposers = JSON.parse(selectedComposersElement.textContent);
+              const selectedArrangers = JSON.parse(selectedArrangersElement.textContent);
+              const selectedGenres = JSON.parse(selectedGenresElement.textContent);
+
+              // Helper function to get person's name
+              function getPersonName(person) {
+                  if (person.first_name && person.last_name) {
+                      return `${person.first_name} ${person.last_name}`;
+                  } else if (person.last_name) {
+                      return person.last_name;
+                  } else {
+                      return person.first_name || 'Unknown';
+                  }
+              }
+
+              // Helper function to get genre name
+              function getGenreName(genre) {
+                  return genre.name || 'Unknown Genre';
+              }
+
+              // Create all managers with pre-selected items
+              window.composerManager = new DualListManager({
+                  selectedContainer: 'selected-composers-container',
+                  availableContainer: 'available-composers',
+                  searchInput: 'composer-search',
+                  hiddenSelect: 'id_composer',
+                  getName: getPersonName,
+                  allItems: allComposers,
+                  preSelectedItems: selectedComposers
+              });
+
+              window.arrangerManager = new DualListManager({
+                  selectedContainer: 'selected-arrangers-container',
+                  availableContainer: 'available-arrangers',
+                  searchInput: 'arranger-search',
+                  hiddenSelect: 'id_arranger',
+                  getName: getPersonName,
+                  allItems: allArrangers,
+                  preSelectedItems: selectedArrangers
+              });
+
+              window.genreManager = new DualListManager({
+                  selectedContainer: 'selected-genres-container',
+                  availableContainer: 'available-genres',
+                  searchInput: 'genre-search',
+                  hiddenSelect: 'id_genre',
+                  getName: getGenreName,
+                  allItems: allGenres,
+                  preSelectedItems: selectedGenres
+              });
+
+              // Global removal functions (needed for the remove buttons)
+              window.removeItem_id_composer = function (itemId) {
+                  composerManager.removeItem(itemId);
+              };
+
+              window.removeItem_id_arranger = function (itemId) {
+                  arrangerManager.removeItem(itemId);
+              };
+
+              window.removeItem_id_genre = function (itemId) {
+                  genreManager.removeItem(itemId);
+              };
+
+          } catch (error) {
+              console.error('Error initializing music form:', error);
+          }
+      });
+  </script>
+
+{% endblock %}

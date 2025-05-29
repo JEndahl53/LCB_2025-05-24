@@ -1,0 +1,207 @@
+<!-- templates/organizations/music_detail.html -->
+{% extends "_base.html" %}
+{% load static %}
+
+{% block title %}{{ music.title }} - Music Detail{% endblock %}
+
+{% block content %}
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">
+        <i class="fas fa-user mr-2 text-blue-500"></i>Music Detail
+      </h1>
+      <div class="space-x-2">
+        <a href="{% url 'music_update' music.pk %}"
+           class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-md transition">
+          <i class="fas fa-edit mr-1"></i> Edit
+        </a>
+        <a href="{% url 'music_delete' music.pk %}"
+           class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md transition">
+          <i class="fas fa-trash-alt mr-1"></i> Delete
+        </a>
+        <a href="{% url 'music_list' %}"
+           class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition">
+          <i class="fas fa-arrow-left mr-1"></i> Back
+        </a>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-gray-700 mb-2">Basic Information</h2>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-gray-500">Music Title</p>
+              <p class="font-medium">{{ music.title }}</p>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Composer</p>
+            <p class="font-medium">
+              {% if music.composer.all %}
+                {% for composer in music.composer.all %}
+                  {{ composer.get_sort_name }}{% if not forloop.last %}; {% endif %}
+                {% empty %}
+                  <span class="text-gray-400">-</span>
+                {% endfor %}
+              {% else %}
+                <span class="text-gray-400">-</span>
+              {% endif %}
+            </p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Arranger</p>
+            <p class="font-medium">
+              {% if music.arranger.all %}
+                {% for arranger in music.arranger.all %}
+                  {{ arranger.get_sort_name }}{% if not forloop.last %}; {% endif %}
+                {% empty %}
+                  <span class="text-gray-400">-</span>
+                {% endfor %}
+              {% else %}
+                <span class="text-gray-400">-</span>
+              {% endif %}
+            </p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Drawer</p>
+            <p class="font-medium">{{ music.location_drawer }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Number</p>
+            <p class="font-medium">{{ music.location_number }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Genre</p>
+            <p class="font-medium">
+              {% if music.arranger.all %}
+                {% for genre in music.genre.all %}
+                  {{ genre.name }}{% if not forloop.last %}; {% endif %}
+                {% empty %}
+                  <span class="text-gray-400">-</span>
+                {% endfor %}
+              {% else %}
+                <span class="text-gray-400">-</span>
+              {% endif %}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Difficulty</p>
+            <p class="font-medium">{{ music.get_difficulty_display }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Status</p>
+            <p class="font-medium">{{ music.get_status_display }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Publisher</p>
+            <p class="font-medium">{{ music.publisher }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Published Year</p>
+            <p class="font-medium">{{ music.year_published }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Date Acquired</p>
+            <p class="font-medium">{{ music.date_acquired }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Purchase Price</p>
+            <p class="font-medium">{{ music.purchase_price }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Purchase Source</p>
+            <p class="font-medium">{{ music.purchase_source }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Loaning Organization (Loaned To:)</p>
+            <p class="font-medium">{{ music.loaning_organization }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Loan Start Date</p>
+            <p class="font-medium">{{ music.loan_start_date }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Loan Return Date</p>
+            <p class="font-medium">{{ music.expected_return_date }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Renting Organization</p>
+            <p class="font-medium">{{ music.renting_organization }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Rental Start Date</p>
+            <p class="font-medium">{{ music.rental_start_date }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Rental End Date</p>
+            <p class="font-medium">{{ music.rental_end_date }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Rental Cost</p>
+            <p class="font-medium">{{ music.rental_fee }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Borrowing Organization (Borrowed from:)</p>
+            <p class="font-medium">{{ music.borrowing_organization }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Borrowed Start Date</p>
+            <p class="font-medium">{{ music.borrowing_start_date }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Borrowed Return Date</p>
+            <p class="font-medium">{{ music.expected_borrowing_return_date }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Piece Duration</p>
+            <p class="font-medium">{{ music.duration }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Score Missing?</p>
+            <p class="font-medium">{{ music.score_missing }}</p>
+          </div>
+        </div>
+
+        {% if music.notes %}
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Notes</h2>
+            <p class="text-gray-700">{{ music.notes }}</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="space-y-4">
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-blue-700 mb-2">Performances</h2>
+          {% if music.music_set.exists %}
+            <ul class="divide-y divide-blue-100">
+              {% for music in music.music_set.all %}
+                <li class="py-2">
+                  <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">{{ music.title }}</a>
+                  <span class="text-gray-500 text-sm">{{ music.genre }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-gray-500 italic">No performances recorded.</p>
+          {% endif %}
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-gray-700 mb-2">System Information</h2>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-gray-500">Date Added</p>
+              <p>{{ music.date_added|date:"F j, Y" }}</p>
+            </div>
+            <div>
+              <p class="text-gray-500">Last Updated</p>
+              <p>{{ music.date_updated|date:"F j, Y" }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

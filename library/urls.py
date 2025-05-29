@@ -39,6 +39,11 @@ from library.views import (
     RentingOrganizationCreateView,
     RentingOrganizationUpdateView,
     RentingOrganizationDeleteView,
+    MusicListView,
+    MusicDetailView,
+    MusicCreateView,
+    MusicUpdateView,
+    MusicDeleteView,
 )
 
 
@@ -187,5 +192,31 @@ urlpatterns = [
         "rentingorganizations/<int:pk>/delete/",
         RentingOrganizationDeleteView.as_view(),
         name="rentingorganization_delete",
+    ),
+    # Music urls
+    path(
+        "music/",
+        MusicListView.as_view(),
+        name="music_list",
+    ),
+    path(
+        "music/<int:pk>/",
+        MusicDetailView.as_view(),
+        name="music_detail",
+    ),
+    path(
+        "music/create/",
+        MusicCreateView.as_view(),
+        name="music_create",
+    ),
+    path(
+        "music/<int:pk>/update/",
+        MusicUpdateView.as_view(),
+        name="music_update",
+    ),
+    path(
+        "music/<int:pk>/delete/",
+        MusicDeleteView.as_view(),
+        name="music_delete",
     ),
 ]
