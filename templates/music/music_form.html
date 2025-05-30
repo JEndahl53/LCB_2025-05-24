@@ -1,4 +1,4 @@
-<!-- templates/musics/music_form.html -->
+<!-- templates/music/music_form.html -->
 {% extends "_base.html" %}
 {% load static %}
 {% load widget_tweaks %}
@@ -132,11 +132,13 @@
           </div>
         </div>
 
+
         <!-- Right Column - other fields -->
         <div class="space-y-4">
           <h2 class="text-lg font-medium text-gray-700 border-b pb-2">Additional Details</h2>
 
           <div class="grid grid-cols-2 gap-4">
+            <!-- Drawer and Number -->
             <div class="form-group{% if form.location_drawer.errors %} has-error{% endif %}">
               <label for="{{ form.location_drawer.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
                 Drawer
@@ -157,26 +159,7 @@
               {% endif %}
             </div>
 
-            <div class="form-group{% if form.difficulty.errors %} has-error{% endif %}">
-              <label for="{{ form.difficulty.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Difficulty
-              </label>
-              {{ form.difficulty|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.difficulty.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.difficulty.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.status.errors %} has-error{% endif %}">
-              <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              {{ form.status|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.status.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.status.errors.0 }}</p>
-              {% endif %}
-            </div>
-
+            <!-- Publisher and Year Published -->
             <div class="form-group{% if form.publisher.errors %} has-error{% endif %}">
               <label for="{{ form.publisher.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
                 Publisher
@@ -197,189 +180,243 @@
               {% endif %}
             </div>
 
-            <div class="form-group{% if form.date_acquired.errors %} has-error{% endif %}">
-              <label for="{{ form.date_acquired.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Date Acquired
+            <!-- Difficulty and Piece Duration -->
+            <div class="form-group{% if form.difficulty.errors %} has-error{% endif %}">
+              <label for="{{ form.difficulty.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Difficulty
               </label>
-              {{ form.date_acquired|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.date_acquired.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.date_acquired.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.purchase_price.errors %} has-error{% endif %}">
-              <label for="{{ form.purchase_price.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Purchase Price
-              </label>
-              {{ form.purchase_price|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.purchase_price.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.purchase_price.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.purchase_source.errors %} has-error{% endif %}">
-              <label for="{{ form.purchase_source.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Purchase Source
-              </label>
-              {{ form.purchase_source|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.purchase_source.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.purchase_source.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.loaning_organization.errors %} has-error{% endif %}">
-              <label for="{{ form.loaning_organization.id_for_label }}"
-                     class="block text-sm font-medium text-gray-700 mb-1">
-                Loaning Organization (Loaned to:)
-              </label>
-              {{ form.loaning_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.loaning_organization.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.loaning_organization.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.loan_start_date.errors %} has-error{% endif %}">
-              <label for="{{ form.loan_start_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Loan Start Date
-              </label>
-              {{ form.loan_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.loan_start_date.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.loan_start_date.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.expected_return_date.errors %} has-error{% endif %}">
-              <label for="{{ form.expected_return_date.id_for_label }}"
-                     class="block text-sm font-medium text-gray-700 mb-1">
-                Expected Return Date
-              </label>
-              {{ form.expected_return_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.expected_return_date.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.expected_return_date.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.renting_organization.errors %} has-error{% endif %}">
-              <label for="{{ form.renting_organization.id_for_label }}"
-                     class="block text-sm font-medium text-gray-700 mb-1">
-                Renting Organization
-              </label>
-              {{ form.renting_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.renting_organization.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.renting_organization.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.rental_start_date.errors %} has-error{% endif %}">
-              <label for="{{ form.rental_start_date.id_for_label }}"
-                     class="block text-sm font-medium text-gray-700 mb-1">
-                Rental Start Date
-              </label>
-              {{ form.rental_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.rental_start_date.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.rental_start_date.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.rental_end_date.errors %} has-error{% endif %}">
-              <label for="{{ form.rental_end_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Rental End Date
-              </label>
-              {{ form.rental_end_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.rental_end_date.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.rental_end_date.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.rental_fee.errors %} has-error{% endif %}">
-              <label for="{{ form.rental_fee.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Rental Fee
-              </label>
-              {{ form.rental_fee|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.rental_fee.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.rental_fee.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.borrowing_organization.errors %} has-error{% endif %}">
-              <label for="{{ form.borrowing_organization.id_for_label }}"
-                     class="block text-sm font-medium text-gray-700 mb-1">
-                Borrowing Organization (Borrowed from:)
-              </label>
-              {{ form.borrowing_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.borrowing_organization.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.borrowing_organization.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.borrowing_start_date.errors %} has-error{% endif %}">
-              <label for="{{ form.borrowing_start_date.id_for_label }}"
-                     class="block text-sm font-medium text-gray-700 mb-1">
-                Borrowing Start Date
-              </label>
-              {{ form.borrowing_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.borrowing_start_date.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.borrowing_start_date.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.expected_borrowing_return_date.errors %} has-error{% endif %}">
-              <label for="{{ form.expected_borrowing_return_date.id_for_label }}"
-                     class="block text-sm font-medium text-gray-700 mb-1">
-                Borrowing Return Date
-              </label>
-              {{ form.expected_borrowing_return_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.expected_borrowing_return_date.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.expected_borrowing_return_date.errors.0 }}</p>
+              {{ form.difficulty|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.difficulty.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.difficulty.errors.0 }}</p>
               {% endif %}
             </div>
 
             <div class="form-group{% if form.duration.errors %} has-error{% endif %}">
               <label for="{{ form.duration.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Piece duration
+                Piece Duration
               </label>
               {{ form.duration|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
               {% if form.duration.errors %}
                 <p class="text-red-600 text-xs mt-1">{{ form.duration.errors.0 }}</p>
               {% endif %}
             </div>
+          </div>
 
-            <div class="form-group{% if form.score_missing.errors %} has-error{% endif %}">
-              <div class="flex items-center space-x-2">
-                {{ form.score_missing|add_class:"h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" }}
-                <label for="{{ form.score_missing.id_for_label }}" class="text-sm font-medium text-gray-700">
-                  Missing Score
-                </label>
-              </div>
-              {% if form.score_missing.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.score_missing.errors.0 }}</p>
-              {% endif %}
-            </div>
-
-            <div class="form-group{% if form.notes.errors %} has-error{% endif %}">
-              <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Notes
+          <!-- Missing Score (outside the grid, spans full width) -->
+          <div class="form-group{% if form.score_missing.errors %} has-error{% endif %}">
+            <div class="flex items-center space-x-2">
+              {{ form.score_missing|add_class:"h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" }}
+              <label for="{{ form.score_missing.id_for_label }}" class="text-sm font-medium text-gray-700">
+                Missing Score
               </label>
-              {{ form.notes|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-              {% if form.notes.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.notes.errors.0 }}</p>
+            </div>
+            {% if form.score_missing.errors %}
+              <p class="text-red-600 text-xs mt-1">{{ form.score_missing.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Status Information Section (outside the grid, spans full width) -->
+          <div id="status-fields-section" class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-700 border-b pb-2">Status Information</h3>
+
+            <!-- Status field (full width) -->
+            <div class="form-group{% if form.status.errors %} has-error{% endif %}">
+              <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              {{ form.status|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+              {% if form.status.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.status.errors.0 }}</p>
               {% endif %}
             </div>
+
+            <!-- Owned fields (O) -->
+            <div id="owned-fields" class="grid grid-cols-2 gap-4 hidden">
+              <div class="form-group{% if form.purchase_source.errors %} has-error{% endif %} col-span-2">
+                <label for="{{ form.purchase_source.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  Purchase Source
+                </label>
+                {{ form.purchase_source|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.purchase_source.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.purchase_source.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <div class="form-group{% if form.date_acquired.errors %} has-error{% endif %}">
+                <label for="{{ form.date_acquired.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  Date Acquired
+                </label>
+                {{ form.date_acquired|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.date_acquired.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.date_acquired.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <div class="form-group{% if form.purchase_price.errors %} has-error{% endif %}">
+                <label for="{{ form.purchase_price.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  Purchase Price
+                </label>
+                {{ form.purchase_price|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.purchase_price.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.purchase_price.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+
+            </div> <!-- End Owned fields -->
+
+            <!-- Loaned To fields (L) -->
+            <div id="loaned-fields" class="grid grid-cols-2 gap-4 hidden">
+              <div class="form-group{% if form.loaning_organization.errors %} has-error{% endif %} col-span-2">
+                <label for="{{ form.loaning_organization.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  Organization (Loaned to:)
+                </label>
+                {{ form.loaning_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.loaning_organization.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.loaning_organization.errors.0 }}</p>
+                {% endif %}
+              </div>
+              <div class="form-group{% if form.loan_start_date.errors %} has-error{% endif %}">
+                <label for="{{ form.loan_start_date.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                {{ form.loan_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.loan_start_date.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.loan_start_date.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <div class="form-group{% if form.expected_return_date.errors %} has-error{% endif %}">
+                <label for="{{ form.expected_return_date.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  End Date
+                </label>
+                {{ form.expected_return_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.expected_return_date.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.expected_return_date.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+
+            </div> <!-- End Loaned To fields -->
+
+            <!-- Rented fields (R) -->
+            <div id="rented-fields" class="grid grid-cols-2 gap-4 hidden">
+              <div class="form-group{% if form.renting_organization.errors %} has-error{% endif %}">
+                <label for="{{ form.renting_organization.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  Organization
+                </label>
+                {{ form.renting_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.renting_organization.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.renting_organization.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <div class="form-group{% if form.rental_fee.errors %} has-error{% endif %}">
+                <label for="{{ form.rental_fee.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                  Rental Fee
+                </label>
+                {{ form.rental_fee|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.rental_fee.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.rental_fee.errors.0 }}</p>
+                {% endif %}
+              </div>
+              <div class="form-group{% if form.rental_start_date.errors %} has-error{% endif %}">
+                <label for="{{ form.rental_start_date.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                {{ form.rental_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.rental_start_date.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.rental_start_date.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <div class="form-group{% if form.rental_end_date.errors %} has-error{% endif %}">
+                <label for="{{ form.rental_end_date.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  End Date
+                </label>
+                {{ form.rental_end_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.rental_end_date.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.rental_end_date.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+
+            </div> <!-- End Rented fields -->
+
+            <!-- Borrowed from fields (B) -->
+            <div id="borrowed-fields" class="grid grid-cols-2 gap-4 hidden">
+              <div class="form-group{% if form.borrowing_start_date.errors %} has-error{% endif %}">
+                <label for="{{ form.borrowing_start_date.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                {{ form.borrowing_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.borrowing_start_date.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.borrowing_start_date.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <div class="form-group{% if form.expected_borrowing_return_date.errors %} has-error{% endif %}">
+                <label for="{{ form.expected_borrowing_return_date.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  End Date
+                </label>
+                {{ form.expected_borrowing_return_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.expected_borrowing_return_date.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.expected_borrowing_return_date.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <div class="form-group{% if form.borrowing_organization.errors %} has-error{% endif %} col-span-2">
+                <label for="{{ form.borrowing_organization.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  Organization (Borrowed from:)
+                </label>
+                {{ form.borrowing_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.borrowing_organization.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.borrowing_organization.errors.0 }}</p>
+                {% endif %}
+              </div>
+            </div> <!-- End Borrowed from fields -->
+          </div>
+
+          <!-- Notes (outside the grid, spans full width) -->
+          <div class="form-group{% if form.notes.errors %} has-error{% endif %}">
+            <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Notes
+            </label>
+            {{ form.notes|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+            {% if form.notes.errors %}
+              <p class="text-red-600 text-xs mt-1">{{ form.notes.errors.0 }}</p>
+            {% endif %}
           </div>
         </div>
+      </div>
 
-        <div class="flex justify-between pt-4 border-t">
-          <a href="{% url 'music_list' %}"
-             class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition">
-            <i class="fas fa-times mr-2"></i> Cancel
-          </a>
-          <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
-            <i class="fas fa-{% if music %}save{% else %}plus{% endif %} mr-2"></i>
-            {% if music %}Update{% else %}Create{% endif %} a Piece
-          </button>
-        </div>
+      <div class="flex justify-between pt-4 border-t">
+        <a href="{% url 'music_list' %}"
+           class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition">
+          <i class="fas fa-times mr-2"></i> Cancel
+        </a>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
+          <i class="fas fa-{% if music %}save{% else %}plus{% endif %} mr-2"></i>
+          {% if music %}Update{% else %}Create{% endif %} a Piece
+        </button>
+      </div>
     </form>
   </div>
+
+
+  <!-- At the bottom of your template, replace the existing script section with this: -->
 
   <!-- Pass data to JavaScript -->
   {{ all_composers|json_script:"all-composers" }}
@@ -389,224 +426,284 @@
   {{ selected_arrangers|json_script:"selected-arrangers" }}
   {{ selected_genres|json_script:"selected-genres" }}
 
+
   <script>
-      // Dual list management class
-      class DualListManager {
-          constructor(config) {
-              this.selectedContainer = document.getElementById(config.selectedContainer);
-              this.availableContainer = document.getElementById(config.availableContainer);
-              this.searchInput = document.getElementById(config.searchInput);
-              this.hiddenSelect = document.getElementById(config.hiddenSelect);
-              this.getName = config.getName;
-              this.allItems = config.allItems;
-              this.selectedItems = new Map();
-              this.filteredItems = [...this.allItems];
-              this.preSelectedItems = config.preSelectedItems || [];
-
-              this.init();
-          }
-
-          init() {
-              // Set up search functionality
-              this.searchInput.addEventListener('input', (e) => {
-                  this.filterItems(e.target.value);
-              });
-
-              // Initialize with selected items
-              this.loadSelectedItems();
-              this.renderAll();
-          }
-
-          loadSelectedItems() {
-              // Load pre-selected items
-              this.preSelectedItems.forEach(item => {
-                  this.selectedItems.set(item.id, item);
-              });
-
-              // Remove selected items from available items
-              this.filteredItems = this.allItems.filter(item =>
-                  !this.selectedItems.has(item.id)
-              );
-
-              // Update hidden select to reflect selected items
-              this.updateHiddenSelect();
-          }
-
-          filterItems(searchTerm) {
-              const term = searchTerm.toLowerCase();
-              this.filteredItems = this.allItems.filter(item =>
-                  this.getName(item).toLowerCase().includes(term) &&
-                  !this.selectedItems.has(item.id)
-              );
-              this.renderAvailable();
-          }
-
-          addItem(item) {
-              this.selectedItems.set(item.id, item);
-              this.filteredItems = this.filteredItems.filter(i => i.id !== item.id);
-              this.updateHiddenSelect();
-              this.renderAll();
-          }
-
-          removeItem(itemId) {
-              const item = this.selectedItems.get(itemId);
-              if (item) {
-                  this.selectedItems.delete(itemId);
-                  // Re-filter to check if item should appear in available list
-                  this.filterItems(this.searchInput.value);
-                  this.updateHiddenSelect();
-                  this.renderAll();
-              }
-          }
-
-          updateHiddenSelect() {
-              // Clear existing selections
-              Array.from(this.hiddenSelect.options).forEach(option => {
-                  option.selected = false;
-              });
-
-              // Set selections for selected items
-              this.selectedItems.forEach((item, itemId) => {
-                  const option = this.hiddenSelect.querySelector(`option[value="${itemId}"]`);
-                  if (option) {
-                      option.selected = true;
-                  }
-              });
-          }
-
-          renderSelected() {
-              this.selectedContainer.innerHTML = '';
-
-              if (this.selectedItems.size === 0) {
-                  this.selectedContainer.innerHTML = '<div class="text-gray-400 text-sm italic">No items selected</div>';
-                  return;
-              }
-
-              this.selectedItems.forEach(item => {
-                  const div = document.createElement('div');
-                  div.className = 'flex items-center justify-between bg-blue-50 border border-blue-200 rounded px-2 py-1 text-sm';
-                  div.innerHTML = `
-                <span>${this.getName(item)}</span>
-                <button type="button" class="text-red-500 hover:text-red-700 ml-2" onclick="removeItem_${this.hiddenSelect.id}(${item.id})">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-                  this.selectedContainer.appendChild(div);
-              });
-          }
-
-          renderAvailable() {
-              this.availableContainer.innerHTML = '';
-
-              if (this.filteredItems.length === 0) {
-                  this.availableContainer.innerHTML = '<div class="text-gray-400 text-sm italic">No items available</div>';
-                  return;
-              }
-
-              this.filteredItems.forEach(item => {
-                  const div = document.createElement('div');
-                  div.className = 'cursor-pointer hover:bg-blue-50 border border-transparent hover:border-blue-200 rounded px-2 py-1 text-sm';
-                  div.innerHTML = this.getName(item);
-                  div.onclick = () => this.addItem(item);
-                  this.availableContainer.appendChild(div);
-              });
-          }
-
-          renderAll() {
-              this.renderSelected();
-              this.renderAvailable();
-          }
-      }
-
-      // Initialize when DOM is loaded
       document.addEventListener('DOMContentLoaded', function () {
-          try {
-              // Get DOM elements
-              const allComposersElement = document.getElementById('all-composers');
-              const allArrangersElement = document.getElementById('all-arrangers');
-              const allGenresElement = document.getElementById('all-genres');
-              const selectedComposersElement = document.getElementById('selected-composers');
-              const selectedArrangersElement = document.getElementById('selected-arrangers');
-              const selectedGenresElement = document.getElementById('selected-genres');
+          // =================================================================
+          // 1. STATUS-DEPENDENT FIELD VISIBILITY MANAGEMENT
+          // =================================================================
 
-              // Check if all elements exist
-              if (!allComposersElement || !allArrangersElement || !allGenresElement ||
-                  !selectedComposersElement || !selectedArrangersElement || !selectedGenresElement) {
-                  console.error('One or more required elements are missing');
-                  return;
-              }
+          /**
+           * Status-dependent field visibility management
+           * This handles showing/hiding form fields based on the status selection
+           */
+          const statusField = document.getElementById('{{ form.status.id_for_label }}');
+          const statusFieldsSection = document.getElementById('status-fields-section');
 
-              // Parse JSON data
-              const allComposers = JSON.parse(allComposersElement.textContent);
-              const allArrangers = JSON.parse(allArrangersElement.textContent);
-              const allGenres = JSON.parse(allGenresElement.textContent);
-              const selectedComposers = JSON.parse(selectedComposersElement.textContent);
-              const selectedArrangers = JSON.parse(selectedArrangersElement.textContent);
-              const selectedGenres = JSON.parse(selectedGenresElement.textContent);
+          // Get all status-dependent field groups
+          const ownedFields = document.getElementById('owned-fields');
+          const loanedFields = document.getElementById('loaned-fields');
+          const rentedFields = document.getElementById('rented-fields');
+          const borrowedFields = document.getElementById('borrowed-fields');
 
-              // Helper function to get person's name
-              function getPersonName(person) {
-                  if (person.first_name && person.last_name) {
-                      return `${person.first_name} ${person.last_name}`;
-                  } else if (person.last_name) {
-                      return person.last_name;
-                  } else {
-                      return person.first_name || 'Unknown';
+          // Array of all field groups for easy management
+          const allFieldGroups = [ownedFields, loanedFields, rentedFields, borrowedFields];
+
+          /**
+           * Hide all status-dependent field groups
+           * Note: This function now only hides the status-specific fields,
+           * NOT the entire status section (header + dropdown)
+           */
+          function hideAllStatusFields() {
+              allFieldGroups.forEach(group => {
+                  if (group) {
+                      group.classList.add('hidden');
                   }
+              });
+              // Keep the status fields section visible - only hide specific field groups
+              if (statusFieldsSection) {
+                  statusFieldsSection.classList.remove('hidden');
               }
-
-              // Helper function to get genre name
-              function getGenreName(genre) {
-                  return genre.name || 'Unknown Genre';
-              }
-
-              // Create all managers with pre-selected items
-              window.composerManager = new DualListManager({
-                  selectedContainer: 'selected-composers-container',
-                  availableContainer: 'available-composers',
-                  searchInput: 'composer-search',
-                  hiddenSelect: 'id_composer',
-                  getName: getPersonName,
-                  allItems: allComposers,
-                  preSelectedItems: selectedComposers
-              });
-
-              window.arrangerManager = new DualListManager({
-                  selectedContainer: 'selected-arrangers-container',
-                  availableContainer: 'available-arrangers',
-                  searchInput: 'arranger-search',
-                  hiddenSelect: 'id_arranger',
-                  getName: getPersonName,
-                  allItems: allArrangers,
-                  preSelectedItems: selectedArrangers
-              });
-
-              window.genreManager = new DualListManager({
-                  selectedContainer: 'selected-genres-container',
-                  availableContainer: 'available-genres',
-                  searchInput: 'genre-search',
-                  hiddenSelect: 'id_genre',
-                  getName: getGenreName,
-                  allItems: allGenres,
-                  preSelectedItems: selectedGenres
-              });
-
-              // Global removal functions (needed for the remove buttons)
-              window.removeItem_id_composer = function (itemId) {
-                  composerManager.removeItem(itemId);
-              };
-
-              window.removeItem_id_arranger = function (itemId) {
-                  arrangerManager.removeItem(itemId);
-              };
-
-              window.removeItem_id_genre = function (itemId) {
-                  genreManager.removeItem(itemId);
-              };
-
-          } catch (error) {
-              console.error('Error initializing music form:', error);
           }
+
+          /**
+           * Show specific field groups based on status
+           * @param {Array} groupsToShow - Array of DOM elements to show
+           */
+          function showStatusFields(groupsToShow) {
+              // First hide all status-specific fields
+              hideAllStatusFields();
+
+              // Ensure the status fields section is visible
+              if (statusFieldsSection) {
+                  statusFieldsSection.classList.remove('hidden');
+              }
+
+              // Show the specified groups
+              groupsToShow.forEach(group => {
+                  if (group) {
+                      group.classList.remove('hidden');
+                  }
+              });
+          }
+
+          /**
+           * Handle status change events
+           */
+          function handleStatusChange() {
+              const statusValue = statusField.value;
+
+              console.log('Status changed to:', statusValue); // Debug log
+
+              switch (statusValue) {
+                  case '': // Empty status
+                  case 'M': // Missing
+                      // Hide all status-specific fields but keep the section visible
+                      hideAllStatusFields();
+                      break;
+
+                  case 'O': // Owned
+                      showStatusFields([ownedFields]);
+                      break;
+
+                  case 'L': // Loaned To
+                      showStatusFields([loanedFields]);
+                      break;
+
+                  case 'R': // Rented
+                      showStatusFields([rentedFields]);
+                      break;
+
+                  case 'B': // Borrowed From
+                      showStatusFields([borrowedFields]);
+                      break;
+
+                  default:
+                      console.warn('Unknown status value:', statusValue);
+                      hideAllStatusFields();
+                      break;
+              }
+          }
+
+          // Initialize status field management
+          if (statusField) {
+              statusField.addEventListener('change', handleStatusChange);
+              // Call on page load to set initial state
+              handleStatusChange();
+          } else {
+              console.error('Status field not found. Expected ID:', '{{ form.status.id_for_label }}');
+          }
+
+          // =================================================================
+          // 2. DUAL LIST MANAGEMENT FOR COMPOSERS, ARRANGERS, AND GENRES
+          // =================================================================
+
+          // Dual list management class
+          class DualListManager {
+              constructor(config) {
+                  this.selectedContainer = document.getElementById(config.selectedContainer);
+                  this.availableContainer = document.getElementById(config.availableContainer);
+                  this.searchInput = document.getElementById(config.searchInput);
+                  this.hiddenSelect = document.getElementById(config.hiddenSelect);
+                  this.getName = config.getName;
+                  this.allItems = config.allItems;
+                  this.selectedItems = new Map();
+                  this.filteredItems = [...this.allItems];
+                  this.preSelectedItems = config.preSelectedItems || [];
+
+                  this.init();
+              }
+
+              init() {
+                  // Set up search functionality
+                  this.searchInput.addEventListener('input', (e) => {
+                      this.filterItems(e.target.value);
+                  });
+
+                  // Load pre-selected items
+                  this.preSelectedItems.forEach(item => {
+                      this.selectedItems.set(item.id, item);
+                  });
+
+                  // Initial render
+                  this.renderAvailable();
+                  this.renderSelected();
+                  this.updateHiddenField();
+              }
+
+              filterItems(searchTerm) {
+                  const term = searchTerm.toLowerCase();
+                  this.filteredItems = this.allItems.filter(item =>
+                      this.getName(item).toLowerCase().includes(term) &&
+                      !this.selectedItems.has(item.id)
+                  );
+                  this.renderAvailable();
+              }
+
+              renderAvailable() {
+                  this.availableContainer.innerHTML = '';
+                  this.filteredItems
+                      .filter(item => !this.selectedItems.has(item.id))
+                      .forEach(item => {
+                          const button = this.createItemButton(item, 'add');
+                          this.availableContainer.appendChild(button);
+                      });
+              }
+
+              renderSelected() {
+                  this.selectedContainer.innerHTML = '';
+                  Array.from(this.selectedItems.values()).forEach(item => {
+                      const button = this.createItemButton(item, 'remove');
+                      this.selectedContainer.appendChild(button);
+                  });
+              }
+
+              createItemButton(item, action) {
+                  const button = document.createElement('button');
+                  button.type = 'button';
+                  button.className = action === 'add'
+                      ? 'text-left w-full px-2 py-1 text-sm bg-white hover:bg-blue-50 border border-gray-200 rounded'
+                      : 'text-left w-full px-2 py-1 text-sm bg-blue-50 hover:bg-red-50 border border-blue-200 rounded flex justify-between items-center';
+
+                  const nameSpan = document.createElement('span');
+                  nameSpan.textContent = this.getName(item);
+                  button.appendChild(nameSpan);
+
+                  if (action === 'remove') {
+                      const removeIcon = document.createElement('span');
+                      removeIcon.innerHTML = '&times;';
+                      removeIcon.className = 'text-red-500 font-bold';
+                      button.appendChild(removeIcon);
+                  }
+
+                  button.addEventListener('click', () => {
+                      if (action === 'add') {
+                          this.addItem(item);
+                      } else {
+                          this.removeItem(item.id);
+                      }
+                  });
+
+                  return button;
+              }
+
+              addItem(item) {
+                  this.selectedItems.set(item.id, item);
+                  this.renderAvailable();
+                  this.renderSelected();
+                  this.updateHiddenField();
+                  this.searchInput.value = '';
+                  this.filterItems('');
+              }
+
+              removeItem(itemId) {
+                  this.selectedItems.delete(itemId);
+                  this.renderAvailable();
+                  this.renderSelected();
+                  this.updateHiddenField();
+              }
+
+              updateHiddenField() {
+                  // Clear existing selections
+                  Array.from(this.hiddenSelect.options).forEach(option => {
+                      option.selected = false;
+                  });
+
+                  // Set new selections
+                  this.selectedItems.forEach((item, id) => {
+                      const option = this.hiddenSelect.querySelector(`option[value="${id}"]`);
+                      if (option) {
+                          option.selected = true;
+                      }
+                  });
+              }
+          }
+
+          // Get data from Django context
+          const allComposers = JSON.parse(document.getElementById('all-composers').textContent);
+          const allArrangers = JSON.parse(document.getElementById('all-arrangers').textContent);
+          const allGenres = JSON.parse(document.getElementById('all-genres').textContent);
+          const selectedComposers = JSON.parse(document.getElementById('selected-composers').textContent);
+          const selectedArrangers = JSON.parse(document.getElementById('selected-arrangers').textContent);
+          const selectedGenres = JSON.parse(document.getElementById('selected-genres').textContent);
+
+          // Initialize dual list managers
+          const composerManager = new DualListManager({
+              selectedContainer: 'selected-composers-container',
+              availableContainer: 'available-composers',
+              searchInput: 'composer-search',
+              hiddenSelect: 'id_composer',
+              getName: (item) => `${item.first_name} ${item.last_name}`,
+              allItems: allComposers,
+              preSelectedItems: selectedComposers
+          });
+
+          const arrangerManager = new DualListManager({
+              selectedContainer: 'selected-arrangers-container',
+              availableContainer: 'available-arrangers',
+              searchInput: 'arranger-search',
+              hiddenSelect: 'id_arranger',
+              getName: (item) => `${item.first_name} ${item.last_name}`,
+              allItems: allArrangers,
+              preSelectedItems: selectedArrangers
+          });
+
+          const genreManager = new DualListManager({
+              selectedContainer: 'selected-genres-container',
+              availableContainer: 'available-genres',
+              searchInput: 'genre-search',
+              hiddenSelect: 'id_genre',
+              getName: (item) => item.name,
+              allItems: allGenres,
+              preSelectedItems: selectedGenres
+          });
+
+          // =================================================================
+          // 3. OTHER FORM FUNCTIONALITY (if any)
+          // =================================================================
+
+          // Add any other form-related JavaScript here
+          console.log('Music form initialized successfully');
       });
   </script>
 

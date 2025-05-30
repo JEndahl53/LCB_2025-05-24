@@ -1,4 +1,4 @@
-<!-- templates/organizations/music_detail.html -->
+<!-- templates/music/music_detail.html -->
 {% extends "_base.html" %}
 {% load static %}
 
@@ -8,7 +8,7 @@
   <div class="bg-white rounded-lg shadow-md p-6">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-gray-800">
-        <i class="fas fa-user mr-2 text-blue-500"></i>Music Detail
+        <i class="fas fa-music mr-2 text-blue-500"></i>{{ music.title }}
       </h1>
       <div class="space-x-2">
         <a href="{% url 'music_update' music.pk %}"
@@ -27,177 +27,437 @@
     </div>
 
     <div class="grid md:grid-cols-2 gap-6">
+      <!-- Left Column - Music Information -->
       <div class="space-y-4">
         <div class="bg-gray-50 p-4 rounded-lg">
-          <h2 class="text-lg font-semibold text-gray-700 mb-2">Basic Information</h2>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-sm text-gray-500">Music Title</p>
-              <p class="font-medium">{{ music.title }}</p>
-            </div>
+          <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
+            <i class="fas fa-info-circle mr-2 text-blue-500"></i>Music Information
+          </h2>
+
+          <!-- Title -->
+          <div class="mb-3">
+            <p class="text-sm text-gray-500 font-medium">Title</p>
+            <p class="text-lg font-semibold text-gray-800">{{ music.title }}</p>
           </div>
-          <div>
-            <p class="text-sm text-gray-500">Composer</p>
-            <p class="font-medium">
+
+          <!-- Composers -->
+          <div class="mb-3">
+            <p class="text-sm text-gray-500 font-medium">Composers</p>
+            <p class="font-medium text-gray-700">
               {% if music.composer.all %}
                 {% for composer in music.composer.all %}
                   {{ composer.get_sort_name }}{% if not forloop.last %}; {% endif %}
-                {% empty %}
-                  <span class="text-gray-400">-</span>
                 {% endfor %}
               {% else %}
-                <span class="text-gray-400">-</span>
+                <span class="text-gray-400 italic">None specified</span>
               {% endif %}
             </p>
           </div>
-          <div>
-            <p class="text-sm text-gray-500">Arranger</p>
-            <p class="font-medium">
+
+          <!-- Arrangers -->
+          <div class="mb-3">
+            <p class="text-sm text-gray-500 font-medium">Arrangers</p>
+            <p class="font-medium text-gray-700">
               {% if music.arranger.all %}
                 {% for arranger in music.arranger.all %}
                   {{ arranger.get_sort_name }}{% if not forloop.last %}; {% endif %}
-                {% empty %}
-                  <span class="text-gray-400">-</span>
                 {% endfor %}
               {% else %}
-                <span class="text-gray-400">-</span>
+                <span class="text-gray-400 italic">None specified</span>
               {% endif %}
             </p>
           </div>
-          <div>
-            <p class="text-sm text-gray-500">Drawer</p>
-            <p class="font-medium">{{ music.location_drawer }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Number</p>
-            <p class="font-medium">{{ music.location_number }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Genre</p>
-            <p class="font-medium">
-              {% if music.arranger.all %}
+
+          <!-- Genres -->
+          <div class="mb-3">
+            <p class="text-sm text-gray-500 font-medium">Genres</p>
+            <p class="font-medium text-gray-700">
+              {% if music.genre.all %}
                 {% for genre in music.genre.all %}
-                  {{ genre.name }}{% if not forloop.last %}; {% endif %}
-                {% empty %}
-                  <span class="text-gray-400">-</span>
+                  <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                    {{ genre.name }}
+                  </span>
                 {% endfor %}
               {% else %}
-                <span class="text-gray-400">-</span>
-              {% endif %}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Difficulty</p>
-            <p class="font-medium">{{ music.get_difficulty_display }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Status</p>
-            <p class="font-medium">{{ music.get_status_display }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Publisher</p>
-            <p class="font-medium">{{ music.publisher }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Published Year</p>
-            <p class="font-medium">{{ music.year_published }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Date Acquired</p>
-            <p class="font-medium">{{ music.date_acquired }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Purchase Price</p>
-            <p class="font-medium">{{ music.purchase_price }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Purchase Source</p>
-            <p class="font-medium">{{ music.purchase_source }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Loaning Organization (Loaned To:)</p>
-            <p class="font-medium">{{ music.loaning_organization }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Loan Start Date</p>
-            <p class="font-medium">{{ music.loan_start_date }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Loan Return Date</p>
-            <p class="font-medium">{{ music.expected_return_date }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Renting Organization</p>
-            <p class="font-medium">{{ music.renting_organization }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Rental Start Date</p>
-            <p class="font-medium">{{ music.rental_start_date }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Rental End Date</p>
-            <p class="font-medium">{{ music.rental_end_date }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Rental Cost</p>
-            <p class="font-medium">{{ music.rental_fee }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Borrowing Organization (Borrowed from:)</p>
-            <p class="font-medium">{{ music.borrowing_organization }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Borrowed Start Date</p>
-            <p class="font-medium">{{ music.borrowing_start_date }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Borrowed Return Date</p>
-            <p class="font-medium">{{ music.expected_borrowing_return_date }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Piece Duration</p>
-            <p class="font-medium">{{ music.duration }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Score Missing?</p>
-            <p class="font-medium">{{ music.score_missing }}</p>
+                <span class="text-gray-400 italic">None specified</span>
+              {% endif %}
+            </p>
           </div>
         </div>
 
-        {% if music.notes %}
-          <div class="bg-gray-50 p-4 rounded-lg">
-            <h2 class="text-lg font-semibold text-gray-700 mb-2">Notes</h2>
-            <p class="text-gray-700">{{ music.notes }}</p>
-          </div>
-        {% endif %}
+        <!-- Performance History Section -->
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-blue-700 mb-4 border-b border-blue-200 pb-2">
+            <i class="fas fa-calendar-alt mr-2 text-blue-600"></i>Performance History
+          </h2>
+
+          {% comment %}
+          TODO: Replace this placeholder section when concert app is complete.
+          This will query: music.concerts.all.order_by('-date')
+          {% endcomment %}
+
+          {% if music.concerts.exists %}
+            <!-- Performance History Table -->
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-blue-200">
+                <thead class="bg-blue-100">
+                <tr>
+                  <th scope="col"
+                      class="px-4 py-2 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">
+                    Concert
+                  </th>
+                  <th scope="col"
+                      class="px-4 py-2 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th scope="col"
+                      class="px-4 py-2 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">
+                    Venue
+                  </th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-blue-100">
+                {% for concert in music.concerts.all|dictsortreversed:"date" %}
+                  <tr class="hover:bg-blue-25 transition-colors duration-150">
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <a href="#"
+                         class="text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors duration-150">
+                        {{ concert.title }}
+                      </a>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                      {% if concert.date %}
+                        {{ concert.date|date:"F j, Y" }}
+                        {% if concert.time %}
+                          <br>
+                          <span class="text-gray-500 text-xs">{{ concert.time|time:"g:i A" }}</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="text-gray-400 italic">Date TBD</span>
+                      {% endif %}
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                      {% if concert.venue %}
+                        {{ concert.venue.name }}
+                      {% else %}
+                        <span class="text-gray-400 italic">Venue TBD</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Performance Statistics -->
+            <div class="mt-4 pt-3 border-t border-blue-200">
+              <div class="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p class="text-2xl font-bold text-blue-600">{{ music.concerts.count }}</p>
+                  <p class="text-xs text-blue-700">Total Performances</p>
+                </div>
+                <div>
+                  <p class="text-2xl font-bold text-blue-600">
+                    {% if music.concerts.exists %}
+                      {{ music.concerts.first.date|date:"Y" }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </p>
+                  <p class="text-xs text-blue-700">Most Recent</p>
+                </div>
+                <div>
+                  <p class="text-2xl font-bold text-blue-600">
+                    {% if music.concerts.exists %}
+                      {{ music.concerts.last.date|date:"Y" }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </p>
+                  <p class="text-xs text-blue-700">First Performance</p>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <!-- No Performances Message -->
+            <div class="text-center py-8">
+              <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
+                <i class="fas fa-music text-blue-600"></i>
+              </div>
+              <h3 class="text-sm font-medium text-gray-700 mb-1">No Performance History</h3>
+              <p class="text-sm text-gray-500 mb-4">This piece hasn't been performed in any concerts yet.</p>
+
+              {% comment %}
+              TODO: Add this link when concert app is complete
+              <a href="{% url 'concert_create' %}?music={{ music.pk }}"
+                 class="inline-flex items-center px-3 py-2 border border-blue-300 shadow-sm text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150">
+                <i class="fas fa-plus mr-2"></i>
+                Add to Concert
+              </a>
+              {% endcomment %}
+
+              <!-- Placeholder button for now -->
+              <button
+                  class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-500 bg-gray-100 cursor-not-allowed"
+                  disabled>
+                <i class="fas fa-plus mr-2"></i>
+                Add to Concert (Coming Soon)
+              </button>
+            </div>
+          {% endif %}
+        </div>
       </div>
 
+      <!-- Right Column - Additional Details -->
       <div class="space-y-4">
-        <div class="bg-blue-50 p-4 rounded-lg">
-          <h2 class="text-lg font-semibold text-blue-700 mb-2">Performances</h2>
-          {% if music.music_set.exists %}
-            <ul class="divide-y divide-blue-100">
-              {% for music in music.music_set.all %}
-                <li class="py-2">
-                  <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">{{ music.title }}</a>
-                  <span class="text-gray-500 text-sm">{{ music.genre }}</span>
-                </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p class="text-gray-500 italic">No performances recorded.</p>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
+            <i class="fas fa-list mr-2 text-green-500"></i>Additional Details
+          </h2>
+
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Location -->
+            <div>
+              <p class="text-sm text-gray-500 font-medium">Drawer</p>
+              <p class="font-medium text-gray-700">{{ music.location_drawer|default:"—" }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 font-medium">Number</p>
+              <p class="font-medium text-gray-700">{{ music.location_number|default:"—" }}</p>
+            </div>
+
+            <!-- Publishing Info -->
+            <div>
+              <p class="text-sm text-gray-500 font-medium">Publisher</p>
+              <p class="font-medium text-gray-700">{{ music.publisher|default:"—" }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 font-medium">Year Published</p>
+              <p class="font-medium text-gray-700">{{ music.year_published|default:"—" }}</p>
+            </div>
+
+            <!-- Music Properties -->
+            <div>
+              <p class="text-sm text-gray-500 font-medium">Difficulty</p>
+              <p class="font-medium text-gray-700">
+                {% if music.difficulty %}
+                  <span class="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">
+                    {{ music.get_difficulty_display }}
+                  </span>
+                {% else %}
+                  —
+                {% endif %}
+              </p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500 font-medium">Duration</p>
+              <p class="font-medium text-gray-700">{{ music.duration|default:"—" }}</p>
+            </div>
+          </div>
+
+          <!-- Score Missing (Full Width) -->
+          <div class="mt-4 pt-3 border-t border-gray-200">
+            <p class="text-sm text-gray-500 font-medium">Score Status</p>
+            <p class="font-medium text-gray-700">
+              {% if music.score_missing %}
+                <span class="inline-flex items-center bg-red-100 text-red-800 text-sm px-2 py-1 rounded">
+                  <i class="fas fa-exclamation-triangle mr-1"></i>Score Missing
+                </span>
+              {% else %}
+                <span class="inline-flex items-center bg-green-100 text-green-800 text-sm px-2 py-1 rounded">
+                  <i class="fas fa-check-circle mr-1"></i>Score Available
+                </span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <!-- Status Information Section -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
+            <i class="fas fa-tag mr-2 text-purple-500"></i>Status Information
+          </h2>
+
+          <!-- Always show status -->
+          <div class="mb-4">
+            <p class="text-sm text-gray-500 font-medium">Status</p>
+            <p class="font-medium text-gray-700">
+              {% if music.status %}
+                <span class="inline-block bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full">
+                  {{ music.get_status_display }}
+                </span>
+              {% else %}
+                <span class="text-gray-400 italic">Not specified</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <!-- Status-specific fields -->
+          {% if music.status == 'O' %}
+            <!-- Owned Fields -->
+            <div class="space-y-3 bg-green-50 p-3 rounded border-l-4 border-green-400">
+              <h3 class="text-sm font-semibold text-green-700 mb-2">
+                <i class="fas fa-home mr-1"></i>Ownership Details
+              </h3>
+
+              {% if music.purchase_source %}
+                <div>
+                  <p class="text-sm text-gray-500 font-medium">Purchase Source</p>
+                  <p class="font-medium text-gray-700">{{ music.purchase_source }}</p>
+                </div>
+              {% endif %}
+
+              <div class="grid grid-cols-2 gap-3">
+                {% if music.date_acquired %}
+                  <div>
+                    <p class="text-sm text-gray-500 font-medium">Date Acquired</p>
+                    <p class="font-medium text-gray-700">{{ music.date_acquired|date:"F j, Y" }}</p>
+                  </div>
+                {% endif %}
+
+                {% if music.purchase_price %}
+                  <div>
+                    <p class="text-sm text-gray-500 font-medium">Purchase Price</p>
+                    <p class="font-medium text-gray-700">${{ music.purchase_price }}</p>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+          {% elif music.status == 'L' %}
+            <!-- Loaned To Fields -->
+            <div class="space-y-3 bg-blue-50 p-3 rounded border-l-4 border-blue-400">
+              <h3 class="text-sm font-semibold text-blue-700 mb-2">
+                <i class="fas fa-share mr-1"></i>Loan Details
+              </h3>
+
+              {% if music.loaning_organization %}
+                <div>
+                  <p class="text-sm text-gray-500 font-medium">Loaned To</p>
+                  <p class="font-medium text-gray-700">{{ music.loaning_organization }}</p>
+                </div>
+              {% endif %}
+
+              <div class="grid grid-cols-2 gap-3">
+                {% if music.loan_start_date %}
+                  <div>
+                    <p class="text-sm text-gray-500 font-medium">Start Date</p>
+                    <p class="font-medium text-gray-700">{{ music.loan_start_date|date:"F j, Y" }}</p>
+                  </div>
+                {% endif %}
+
+                {% if music.expected_return_date %}
+                  <div>
+                    <p class="text-sm text-gray-500 font-medium">Expected Return</p>
+                    <p class="font-medium text-gray-700">{{ music.expected_return_date|date:"F j, Y" }}</p>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+          {% elif music.status == 'R' %}
+            <!-- Rented Fields -->
+            <div class="space-y-3 bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
+              <h3 class="text-sm font-semibold text-yellow-700 mb-2">
+                <i class="fas fa-dollar-sign mr-1"></i>Rental Details
+              </h3>
+
+              <div class="grid grid-cols-2 gap-3">
+                {% if music.renting_organization %}
+                  <div class="col-span-2">
+                    <p class="text-sm text-gray-500 font-medium">Renting Organization</p>
+                    <p class="font-medium text-gray-700">{{ music.renting_organization }}</p>
+                  </div>
+                {% endif %}
+
+                {% if music.rental_fee %}
+                  <div>
+                    <p class="text-sm text-gray-500 font-medium">Rental Fee</p>
+                    <p class="font-medium text-gray-700">${{ music.rental_fee }}</p>
+                  </div>
+                {% endif %}
+
+                {% if music.rental_start_date %}
+                  <div>
+                    <p class="text-sm text-gray-500 font-medium">Start Date</p>
+                    <p class="font-medium text-gray-700">{{ music.rental_start_date|date:"F j, Y" }}</p>
+                  </div>
+                {% endif %}
+
+                {% if music.rental_end_date %}
+                  <div>
+                    <p class="text-sm text-gray-500 font-medium">End Date</p>
+                    <p class="font-medium text-gray-700">{{ music.rental_end_date|date:"F j, Y" }}</p>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+          {% elif music.status == 'B' %}
+            <!-- Borrowed From Fields -->
+            <div class="space-y-3 bg-orange-50 p-3 rounded border-l-4 border-orange-400">
+              <h3 class="text-sm font-semibold text-orange-700 mb-2">
+                <i class="fas fa-handshake mr-1"></i>Borrowing Details
+              </h3>
+
+              {% if music.borrowing_organization %}
+                <div>
+                  <p class="text-sm text-gray-500 font-medium">Borrowed From</p>
+                  <p class="font-medium text-gray-700">{{ music.borrowing_organization }}</p>
+                </div>
+              {% endif %}
+
+              <div class="grid grid-cols-2 gap-3">
+                {% if music.borrowing_start_date %}
+                  <div>
+                    <p class="text-sm text-gray-500 font-medium">Start Date</p>
+                    <p class="font-medium text-gray-700">{{ music.borrowing_start_date|date:"F j, Y" }}</p>
+                  </div>
+                {% endif %}
+
+                {% if music.expected_borrowing_return_date %}
+                  <div>
+                    <p class="text-sm text-gray-500 font-medium">Expected Return</p>
+                    <p class="font-medium text-gray-700">{{ music.expected_borrowing_return_date|date:"F j, Y" }}</p>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+          {% elif music.status == 'M' %}
+            <!-- Missing Status -->
+            <div class="bg-red-50 p-3 rounded border-l-4 border-red-400">
+              <h3 class="text-sm font-semibold text-red-700">
+                <i class="fas fa-exclamation-triangle mr-1"></i>Missing Music
+              </h3>
+              <p class="text-sm text-red-600 mt-1">This music piece is currently missing from the library.</p>
+            </div>
           {% endif %}
         </div>
 
+        <!-- Notes Section (if any) -->
+        {% if music.notes %}
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">
+              <i class="fas fa-sticky-note mr-2 text-amber-500"></i>Notes
+            </h2>
+            <p class="text-gray-700 whitespace-pre-line">{{ music.notes }}</p>
+          </div>
+        {% endif %}
+
+        <!-- System Information -->
         <div class="bg-gray-50 p-4 rounded-lg">
-          <h2 class="text-lg font-semibold text-gray-700 mb-2">System Information</h2>
+          <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
+            <i class="fas fa-cog mr-2 text-gray-500"></i>System Information
+          </h2>
           <div class="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p class="text-gray-500">Date Added</p>
-              <p>{{ music.date_added|date:"F j, Y" }}</p>
+              <p class="text-gray-500 font-medium">Date Added</p>
+              <p class="text-gray-700">{{ music.date_added|date:"F j, Y g:i A" }}</p>
             </div>
             <div>
-              <p class="text-gray-500">Last Updated</p>
-              <p>{{ music.date_updated|date:"F j, Y" }}</p>
+              <p class="text-gray-500 font-medium">Last Updated</p>
+              <p class="text-gray-700">{{ music.date_updated|date:"F j, Y g:i A" }}</p>
             </div>
           </div>
         </div>
