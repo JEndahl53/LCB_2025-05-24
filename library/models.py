@@ -192,8 +192,8 @@ class Music(models.Model):
     title = models.CharField(max_length=255)
     composer = models.ManyToManyField(Composer, related_name="compositions", blank=True)
     arranger = models.ManyToManyField(Arranger, blank=True, related_name="arrangements")
-    location_drawer = models.CharField(max_length=5, blank=True, null=True)
-    location_number = models.CharField(max_length=5, blank=True, null=True)
+    location_drawer = models.PositiveIntegerField(db_index=True, blank=True, null=True)
+    location_number = models.PositiveIntegerField(db_index=True, blank=True, null=True)
     genre = models.ManyToManyField(Genre, blank=True, related_name="genres")
     difficulty = models.CharField(
         max_length=2, choices=DIFFICULTY_CHOICES, blank=True, default=""

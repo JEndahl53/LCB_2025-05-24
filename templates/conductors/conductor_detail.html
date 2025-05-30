@@ -1,0 +1,83 @@
+<!-- templates/conductors/conductor_detail.html -->
+{% extends "_base.html" %}
+{% load static %}
+
+{% block title %}{{ conductor.get_full_name }} - Conductor Detail{% endblock %}
+
+{% block content %}
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">
+        <i class="fas fa-user mr-2 text-blue-500"></i>Conductor Detail
+      </h1>
+      <div class="space-x-2">
+        <a href="{% url 'conductor_update' conductor.pk %}"
+           class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-md transition">
+          <i class="fas fa-edit mr-1"></i> Edit
+        </a>
+        <a href="{% url 'conductor_delete' conductor.pk %}"
+           class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md transition">
+          <i class="fas fa-trash-alt mr-1"></i> Delete
+        </a>
+        <a href="{% url 'conductors_list' %}"
+           class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition">
+          <i class="fas fa-arrow-left mr-1"></i> Back
+        </a>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-gray-700 mb-2">Basic Information</h2>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-gray-500">Full Name</p>
+              <p class="font-medium">{{ conductor.get_full_name }}</p>
+            </div>
+          </div>
+        </div>
+
+        {% if conductor.notes %}
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Notes</h2>
+            <p class="text-gray-700">{{ conductor.notes }}</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="space-y-4">
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-blue-700 mb-2">Concerts Conducted</h2>
+          <!-- modify this to add concerts rather than music.set --><!-- todo -->
+          {% if conductor.music_set.exists %}
+            <ul class="divide-y divide-blue-100">
+              {% for music in conductor.music_set.all %}
+                <li class="py-2">
+                  <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">{{ music.title }}</a>
+                  <span class="text-gray-500 text-sm">{{ music.genre }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-gray-500 italic">No works found in the library.</p>
+          {% endif %}
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-gray-700 mb-2">System Information</h2>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-gray-500">Date Added</p>
+              <p>{{ conductor.date_added|date:"F j, Y" }}</p>
+            </div>
+            <div>
+              <p class="text-gray-500">Last Updated</p>
+              <p>{{ conductor.date_updated|date:"F j, Y" }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
