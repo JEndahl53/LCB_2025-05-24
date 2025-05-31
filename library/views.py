@@ -7,6 +7,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
+from django_filters.views import FilterView
 
 from .forms import (
     ComposerForm,
@@ -30,6 +31,7 @@ from .models import (
 )
 from django.urls import reverse_lazy
 from django.views.generic.edit import ModelFormMixin
+from .filters import MusicFilter
 
 # for javascript searches
 from django.http import JsonResponse
@@ -368,13 +370,27 @@ class RentingOrganizationDeleteView(DeleteView):
 
 
 # Music views
-class MusicListView(ListView):
+class MusicListView(FilterView):
     model = Music
     template_name = "music/music_list.html"
     context_object_name = "music_list"
+    filterset_class = MusicFilter
+    paginate_by = 20  # Add pagination for better performance
 
     def get_queryset(self):
-        return Music.objects.all()
+        # Optimize queries with select_related and prefetch_related
+        return (
+            Music.objects.select_related("publisher")
+            .prefetch_related("composer", "arranger", "genre")
+            .order_by("title")
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add total count for display
+        context["total_count"] = self.get_queryset().count()
+        context["filtered_count"] = context["object_list"].count()
+        return context
 
 
 class MusicDetailView(DetailView):

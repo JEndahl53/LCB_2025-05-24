@@ -1,0 +1,90 @@
+{% extends "_base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+  {% if concert %}Edit{% else %}Create{% endif %} Concert
+{% endblock %}
+
+{% block content %}
+  <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
+    <h2 class="text-2xl font-bold mb-4">
+      {% if concert %}Edit{% else %}Create{% endif %} Concert
+    </h2>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- Show errors for the main form -->
+      {% for field in form %}
+        {% if field.errors %}
+          <div class="text-red-600 mb-2">{{ field.errors.0 }}</div>
+        {% endif %}
+      {% endfor %}
+
+      <!-- Render all Concert fields -->
+      <div class="mb-4">
+        <label class="block font-semibold">Title</label>
+        {% render_field form.title class="input input-bordered w-full" %}
+      </div>
+      <div class="mb-4">
+        <label class="block font-semibold">Date</label>
+        {% render_field form.date class="input input-bordered w-full" %}
+      </div>
+      <div class="mb-4">
+        <label class="block font-semibold">Time</label>
+        {% render_field form.time class="input input-bordered w-full" %}
+      </div>
+      <div class="mb-4">
+        <label class="block font-semibold">Venue</label>
+        {% render_field form.venue class="input input-bordered w-full" %}
+      </div>
+      <div class="mb-4">
+        <label class="block font-semibold">Conductor(s)</label>
+        {% render_field form.conductor class="input input-bordered w-full" %}
+      </div>
+      <div class="mb-4">
+        <label class="block font-semibold">Guest(s)</label>
+        {% render_field form.guest class="input input-bordered w-full" %}
+      </div>
+
+      <!-- ConcertProgram formset for assigning music and order -->
+      <h3 class="text-xl font-bold mt-8 mb-4">Program</h3>
+      {{ program_formset.management_form }}
+      <div>
+        {% for form in program_formset %}
+          <div class="flex items-center mb-4 border-b pb-2">
+            <div class="flex-1 mr-2">
+              {#              <label class="block font-semibold">Music Piece</label>#}
+              {% render_field form.music class="input input-bordered w-full" %}
+            </div>
+            <div class="w-32 mr-2">
+              {#              <label class="block font-semibold">Order</label>#}
+              {% render_field form.performance_order class="input input-bordered" %}
+            </div>
+            <div class="w-12">
+              {% if form.instance.pk %}
+                <label class="block font-semibold">Delete</label>
+                {% render_field form.DELETE %}
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-semibold">Poster</label>
+        {% render_field form.poster class="input input-bordered w-full" %}
+      </div>
+      <div class="mb-4">
+        <label class="block font-semibold">Description</label>
+        {% render_field form.description class="input input-bordered w-full" %}
+      </div>
+
+
+      <button type="submit" class="btn btn-primary mt-6">
+        <i class="fa fa-save"></i> Save Concert
+      </button>
+    </form>
+  </div>
+{% endblock %}

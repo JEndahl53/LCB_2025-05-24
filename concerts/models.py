@@ -2,10 +2,9 @@
 #
 from django.db import models
 from django.urls import reverse
-from library.models import Music
-
 
 import common.models
+from library.models import Music
 
 
 def construct_full_name(self):
@@ -21,6 +20,33 @@ def construct_full_name(self):
         full_name += self.middle_initial + " "
     full_name += self.last_name
     return full_name
+
+
+def construct_sort_name(self):
+    last_name = (self.last_name or "").strip()
+    title = (self.title or "").strip()
+    first_name = (self.first_name or "").strip()
+    middle_initial = (self.middle_initial or "").strip()
+
+    # Start with last name (required field from PersonBase)
+    name_parts = [last_name] if last_name else []
+
+    # Build the remaining parts in order: title, first_name, middle_initial
+    remaining_parts = []
+    if title:
+        remaining_parts.append(title)
+    if first_name:
+        remaining_parts.append(first_name)
+    if middle_initial:
+        remaining_parts.append(middle_initial)
+
+    # Join with comma if we have both last name and other parts
+    if name_parts and remaining_parts:
+        return f"{name_parts[0]}, {' '.join(remaining_parts)}"
+    elif name_parts:
+        return name_parts[0]
+    else:
+        return ""
 
 
 class Venue(models.Model):
@@ -58,13 +84,16 @@ class Venue(models.Model):
         return ", ".join(parts)
 
 
-class Conductor(common.models.PersonBase):
+class Conductor(models.Model):
     """
     Model representing a conductor.
     """
 
     title = models.CharField(max_length=10, blank=True, null=True)
+    first_name = models.CharField(max_length=30, blank=True, null=True)
     middle_initial = models.CharField(max_length=1, blank=True, null=True)
+    last_name = models.CharField(max_length=50)
+    notes = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
@@ -78,14 +107,23 @@ class Conductor(common.models.PersonBase):
     def get_absolute_url(self):
         return reverse("conductor_detail", args=[str(self.id)])
 
+    def get_sort_name(self):
+        return construct_sort_name(self)
 
-class Guest(common.models.PersonBase):
+    def get_full_name(self):
+        return construct_full_name(self)
+
+
+class Guest(models.Model):
     """
     Model representing a guest.
     """
 
     title = models.CharField(max_length=10, blank=True, null=True)
+    first_name = models.CharField(max_length=30, blank=True, null=True)
     middle_initial = models.CharField(max_length=1, blank=True, null=True)
+    last_name = models.CharField(max_length=50)
+    notes = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
@@ -98,6 +136,12 @@ class Guest(common.models.PersonBase):
 
     def get_absolute_url(self):
         return reverse("guest_detail", args=[str(self.id)])
+
+    def get_sort_name(self):
+        return construct_sort_name(self)
+
+    def get_full_name(self):
+        return construct_full_name(self)
 
 
 class Concert(models.Model):

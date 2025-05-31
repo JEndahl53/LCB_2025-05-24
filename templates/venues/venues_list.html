@@ -1,0 +1,62 @@
+<!-- templates/venues/venues_list.html -->
+{% extends "_base.html" %}
+{% load static %}
+
+{% block title %}Venues List{% endblock %}
+
+{% block content %}
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">
+        <i class="fas fa-user-edit mr-2 text-blue-500"></i>Venues List
+      </h1>
+      <a href="{% url 'venue_create' %}"
+         class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition flex items-center">
+        <i class="fas fa-plus mr-2"></i> Add Venue
+      </a>
+    </div>
+
+    <div class="overflow-x-auto">
+      {% if venues %}
+        <table class="min-w-full bg-white">
+          <thead class="bg-gray-100 text-gray-800">
+          <tr>
+            <th class="py-3 px-4 text-left">Name</th>
+            <th class="py-3 px-4 text-center">Actions</th>
+          </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+          {% for venue in venues %}
+            <tr class="hover:bg-gray-50">
+              <td class="py-3 px-4">
+                <a href="{% url 'venue_detail' venue.id %}" class="text-blue-600 hover:text-blue-800 font-medium">
+                  {{ venue.name }}
+                </a>
+              </td>
+              <td class="py-3 px-4 text-center">
+                <a href="{% url 'venue_update' venue.pk %}" class="text-yellow-600 hover:text-yellow-800 mx-1"
+                   title="Edit">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'venue_delete' venue.pk %}" class="text-red-600 hover:text-red-800 mx-1"
+                   title="Delete">
+                  <i class="fas fa-trash-alt"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="text-center py-8 bg-gray-50 rounded-lg">
+          <i class="fas fa-info-circle text-gray-400 text-4xl mb-4"></i>
+          <p class="text-gray-600">No venues found in the database.</p>
+          <a href="{% url 'venue_create' %}"
+             class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
+            <i class="fas fa-plus mr-2"></i> Add Your First Venue
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

@@ -2,86 +2,274 @@
 {% extends "_base.html" %}
 {% load static %}
 
-{% block title %}Music List{% endblock %}
+{% block title %}Music Library{% endblock %}
 
 {% block content %}
-  <div class="bg-white rounded-lg shadow-md p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-gray-800">
-        <i class="fas fa-user-edit mr-2 text-blue-500"></i>Music List
-      </h1>
-      <a href="{% url 'music_create' %}"
-         class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition flex items-center">
-        <i class="fas fa-plus mr-2"></i> Add a Piece of Music
-      </a>
+  <div class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Music Library</h1>
+      <p class="text-gray-600">
+        Showing {{ filtered_count }} of {{ total_count }} pieces
+      </p>
     </div>
 
-    <div class="overflow-x-auto">
-      {% if music_list %}
-        <table class="min-w-full bg-white">
-          <thead class="bg-gray-100 text-gray-800">
-          <tr>
-            <th class="py-3 px-4 text-left">Title</th>
-            <th class="py-3 px-4 text-left">Composers</th>
-            <th class="py-3 px-4 text-left">Arrangers</th>
-            <th class="py-3 px-4 text-center">Actions</th>
-          </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-          {% for music in music_list %}
-            <tr class="hover:bg-gray-50">
-              <td class="py-3 px-4">
-                <a href="{% url 'music_detail' music.id %}" class="text-blue-600 hover:text-blue-800 font-medium">
-                  {{ music.title }}
-                </a>
-              </td>
-              <td class="py-3 px-4 text-gray-600">
-                {% if music.composer.all %}
-                  {% for composer in music.composer.all %}
-                    {{ composer.get_sort_name }}{% if not forloop.last %}; {% endif %}
-                  {% empty %}
-                    <span class="text-gray-400">-</span>
-                  {% endfor %}
-                {% else %}
-                  <span class="text-gray-400">-</span>
-                {% endif %}
-              </td>
-              <td class="py-3 px-4 text-gray-600">
-                {% if music.arranger.all %}
-                  {% for arranger in music.arranger.all %}
-                    {{ arranger.get_sort_name }}{% if not forloop.last %}; {% endif %}
-                  {% empty %}
-                    <span class="text-gray-400">-</span>
-                  {% endfor %}
-                {% else %}
-                  <span class="text-gray-400">-</span>
-                {% endif %}
-              </td>
-              <td class="py-3 px-4 text-center">
-                <a href="{% url 'music_update' music.pk %}" class="text-yellow-600 hover:text-yellow-800 mx-1"
-                   title="Edit">
-                  <i class="fas fa-edit"></i>
-                </a>
-                <a href="{% url 'music_delete' music.pk %}" class="text-red-600 hover:text-red-800 mx-1"
-                   title="Delete">
-                  <i class="fas fa-trash-alt"></i>
-                </a>
-              </td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <div class="text-center py-8 bg-gray-50 rounded-lg">
-          <i class="fas fa-info-circle text-gray-400 text-4xl mb-4"></i>
-          <p class="text-gray-600">No pieces found in the database.</p>
-          <a href="{% url 'music_create' %}"
-             class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
-            <i class="fas fa-plus mr-2"></i> Add Your First Piece
+    <!-- Filter Bar -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <form method="get" id="filter-form" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Live Search -->
+          <div class="lg:col-span-2">
+            <label for="{{ filter.form.search.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+              Search
+            </label>
+            {{ filter.form.search }}
+          </div>
 
+          <!-- Difficulty Filter -->
+          <div>
+            <label for="{{ filter.form.difficulty.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+              Difficulty
+            </label>
+            {{ filter.form.difficulty }}
+          </div>
+
+          <!-- Status Filter -->
+          <div>
+            <label for="{{ filter.form.status.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+              Status
+            </label>
+            {{ filter.form.status }}
+          </div>
+        </div>
+
+        <!-- Genre Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Genres
+          </label>
+          <div class="relative">
+            <button type="button" id="genre-dropdown-btn"
+                    class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+              <span id="genre-selection-text">Select genres...</span>
+              <i class="fas fa-chevron-down float-right mt-1"></i>
+            </button>
+            <div id="genre-dropdown"
+                 class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+              <div class="p-2">
+                {% for choice in filter.form.genre %}
+                  <label class="flex items-center py-2 px-3 hover:bg-gray-50 rounded cursor-pointer">
+                    {{ choice.tag }}
+                    <span class="ml-2">{{ choice.choice_label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between items-center pt-4">
+          <button type="button" id="clear-filters"
+                  class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium">
+            <i class="fas fa-times mr-2"></i>Clear Filters
+          </button>
+          <button type="submit"
+                  class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+            <i class="fas fa-search mr-2"></i>Apply Filters
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Results Table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      {% if music_list %}
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 table-fixed">
+            <thead class="bg-gray-50">
+            <tr>
+              <th class="w-20 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Location
+              </th>
+              <th class="w-64 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Title
+              </th>
+              <th class="w-48 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Composers
+              </th>
+              <th class="w-48 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Arrangers
+              </th>
+              <th class="w-24 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Difficulty
+              </th>
+              <th class="w-20 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th class="w-20 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+            {% for music in music_list %}
+              <tr class="hover:bg-gray-50">
+                <td class="px-3 py-4">
+                  <div class="text-sm text-gray-900">
+                    {% if music.location_drawer and music.location_number %}
+                      {{ music.location_drawer }}-{{ music.location_number }}
+                    {% elif music.location_drawer %}
+                      {{ music.location_drawer }}-
+                    {% elif music.location_number %}
+                      {{ music.location_number }}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </div>
+                </td>
+                <td class="px-3 py-4">
+                  <div class="text-sm font-medium text-gray-900">
+                    <a href="{% url 'music_detail' music.pk %}"
+                       class="text-blue-600 hover:text-blue-900: hover:underline break-words">{{ music.title }}
+                    </a>
+                  </div>
+                </td>
+                <td class="px-3 py-4">
+                  <div class="text-sm text-gray-900 break-words">
+                    {% for composer in music.composer.all %}
+                      {{ composer.get_sort_name }}{% if not forloop.last %}; {% endif %}
+                    {% empty %}
+                      -
+                    {% endfor %}
+                  </div>
+                </td>
+                <td class="px-3 py-4">
+                  <div class="text-sm text-gray-900 break-words">
+                    {% for arranger in music.arranger.all %}
+                      {{ arranger.get_sort_name }}{% if not forloop.last %}; {% endif %}
+                    {% empty %}
+                      -
+                    {% endfor %}
+                  </div>
+                </td>
+                <td class="px-3 py-4 whitespace-nowrap">
+                  {% if music.difficulty %}
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                              {% if music.difficulty == 'E' %}bg-green-100 text-green-800
+                                              {% elif music.difficulty == 'ME' %}bg-blue-100 text-blue-800
+                                              {% elif music.difficulty == 'M' %}bg-yellow-100 text-yellow-800
+                                              {% elif music.difficulty == 'MD' %}bg-orange-100 text-orange-800
+                                              {% elif music.difficulty == 'D' %}bg-red-100 text-red-800
+                                              {% endif %}">
+                                            {{ music.get_difficulty_display }}
+                                        </span>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td class="px-3 py-4 whitespace-nowrap">
+                  {% if music.status %}
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                              {% if music.status == 'O' %}bg-green-100 text-green-800
+                                              {% elif music.status == 'L' %}bg-blue-100 text-blue-800
+                                              {% elif music.status == 'R' %}bg-purple-100 text-purple-800
+                                              {% elif music.status == 'B' %}bg-yellow-100 text-yellow-800
+                                              {% elif music.status == 'M' %}bg-red-100 text-red-800
+                                              {% endif %}">
+                                            {{ music.get_status_display }}
+                                        </span>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <a href="{% url 'music_detail' music.pk %}"
+                     class="text-blue-600 hover:text-blue-900 mr-3">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a href="{% url 'music_update' music.pk %}"
+                     class="text-green-600 hover:text-green-900">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-12">
+          <i class="fas fa-music text-gray-400 text-6xl mb-4"></i>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No pieces found</h3>
+          <p class="text-gray-500 mb-4">Try adjusting your search criteria or add your first piece.</p>
+          <a href="{% url 'music_create' %}"
+             class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <i class="fas fa-plus mr-2"></i>Add Your First Piece
           </a>
         </div>
       {% endif %}
     </div>
   </div>
+
+  <!-- JavaScript for Interactive Features -->
+  <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          // Live search with debouncing
+          const searchInput = document.getElementById('live-search');
+          const form = document.getElementById('filter-form');
+          let searchTimeout;
+
+          searchInput.addEventListener('input', function () {
+              clearTimeout(searchTimeout);
+              searchTimeout = setTimeout(function () {
+                  form.submit();
+              }, 500); // 500ms delay for debouncing
+          });
+
+          // Genre dropdown functionality
+          const genreBtn = document.getElementById('genre-dropdown-btn');
+          const genreDropdown = document.getElementById('genre-dropdown');
+          const genreText = document.getElementById('genre-selection-text');
+
+          genreBtn.addEventListener('click', function () {
+              genreDropdown.classList.toggle('hidden');
+          });
+
+          // Close dropdown when clicking outside
+          document.addEventListener('click', function (event) {
+              if (!genreBtn.contains(event.target) && !genreDropdown.contains(event.target)) {
+                  genreDropdown.classList.add('hidden');
+              }
+          });
+
+          // Update genre selection text
+          function updateGenreText() {
+              const checkedBoxes = genreDropdown.querySelectorAll('input[type="checkbox"]:checked');
+              if (checkedBoxes.length === 0) {
+                  genreText.textContent = 'Select genres...';
+              } else if (checkedBoxes.length === 1) {
+                  genreText.textContent = checkedBoxes[0].parentElement.textContent.trim();
+              } else {
+                  genreText.textContent = `${checkedBoxes.length} genres selected`;
+              }
+          }
+
+          // Listen for genre checkbox changes
+          genreDropdown.addEventListener('change', function () {
+              updateGenreText();
+              // Auto-submit form when genre selection changes
+              setTimeout(function () {
+                  form.submit();
+              }, 100);
+          });
+
+          // Clear filters functionality
+          document.getElementById('clear-filters').addEventListener('click', function () {
+              window.location.href = window.location.pathname;
+          });
+
+          // Initialize genre text
+          updateGenreText();
+      });
+  </script>
 {% endblock %}

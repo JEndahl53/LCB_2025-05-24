@@ -1,11 +1,8 @@
-<!-- templates/conductor
-s/conductor
-_confirm_delete.html -->
+<!-- templates/concerts/concert_confirm_delete.html -->
 {% extends "_base.html" %}
 {% load static %}
 
-{% block title %}Delete Conductor
-{% endblock %}
+{% block title %}Delete Concert{% endblock %}
 
 {% block content %}
   <div class="bg-white rounded-lg shadow-md p-6 max-w-lg mx-auto">
@@ -13,8 +10,7 @@ _confirm_delete.html -->
       <div class="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
         <i class="fas fa-trash-alt text-red-500 text-2xl"></i>
       </div>
-      <h1 class="text-2xl font-bold text-gray-800">Delete Conductor
-      </h1>
+      <h1 class="text-2xl font-bold text-gray-800">Delete Concert</h1>
     </div>
 
     <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
@@ -24,27 +20,24 @@ _confirm_delete.html -->
         </div>
         <div class="ml-3">
           <p class="text-sm text-red-700">
-            Are you sure you want to delete "{{ conductor.get_full_name }}"? This action cannot be undone.
+            Are you sure you want to delete "{{ concert.name }}"? This action cannot be undone.
           </p>
         </div>
       </div>
     </div>
 
     <div class="bg-gray-50 p-4 rounded-md mb-6">
-      <h2 class="text-lg font-medium text-gray-700 mb-2">Conductor
-        Information</h2>
-      <p><strong>Name:</strong> {{ conductor.get_full_name }}</p>
-
-      {% if conductor.music_set.exists %}
-        <p class="text-red-600 mt-2"><strong>Warning:</strong> This conductor
-          has {{ conductor.music_set.count }} music
+      <h2 class="text-lg font-medium text-gray-700 mb-2">Concert Information</h2>
+      <p><strong>Name:</strong> {{ concert.name }}</p>
+      {% if concert.music_set.exists %}
+        <p class="text-red-600 mt-2"><strong>Warning:</strong> This concert has {{ concert.music_set.count }} music
           pieces in the library.</p>
       {% endif %}
     </div>
 
     <form method="post" class="flex justify-between">
       {% csrf_token %}
-      <a href="{% url 'conductors_list' %}"
+      <a href="{% url 'concerts_list' %}"
          class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition">
         <i class="fas fa-arrow-left mr-2"></i> Cancel
       </a>

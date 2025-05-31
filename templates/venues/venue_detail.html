@@ -1,0 +1,97 @@
+<!-- templates/venues/venue_detail.html -->
+{% extends "_base.html" %}
+{% load static %}
+
+{% block title %}{{ venue.name }} - Venue Detail{% endblock %}
+
+{% block content %}
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">
+        <i class="fas fa-user mr-2 text-blue-500"></i>Venue Detail
+      </h1>
+      <div class="space-x-2">
+        <a href="{% url 'venue_update' venue.pk %}"
+           class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-md transition">
+          <i class="fas fa-edit mr-1"></i> Edit
+        </a>
+        <a href="{% url 'venue_delete' venue.pk %}"
+           class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md transition">
+          <i class="fas fa-trash-alt mr-1"></i> Delete
+        </a>
+        <a href="{% url 'venues_list' %}"
+           class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition">
+          <i class="fas fa-arrow-left mr-1"></i> Back
+        </a>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-gray-700 mb-2">Basic Information</h2>
+          <!-- Basic Information -->
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold mb-2 flex items-center">
+              <i class="fa-solid fa-location-dot mr-2"></i>
+              {{ venue.name }}
+            </h2>
+            {% if venue.address %}
+              <div class="text-base mb-1">{{ venue.address }}</div>
+            {% endif %}
+            {% if venue.get_address2 %}
+              <div class="text-base text-gray-600 mb-2">{{ venue.get_address2 }}</div>
+            {% endif %}
+          </div>
+          {% if venue.map_link %}
+            <div>
+              <p class="text-gray-500">Map URL</p>
+              <a href="{{ venue.map_link }} " target="_blank" rel="noopener noreferrer">{{ venue.map_link }}</a>
+            </div>
+          {% endif %}
+
+
+        </div>
+
+        {% if venue.notes %}
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Notes</h2>
+            <p class="text-gray-700">{{ venue.notes }}</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="space-y-4">
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-blue-700 mb-2">Works in Library</h2>
+          {% if venue.music_set.exists %}
+            <ul class="divide-y divide-blue-100">
+              {% for music in venue.music_set.all %}
+                <li class="py-2">
+                  <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">{{ music.title }}</a>
+                  <span class="text-gray-500 text-sm">{{ music.venue }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-gray-500 italic">No works found in the library.</p>
+          {% endif %}
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h2 class="text-lg font-semibold text-gray-700 mb-2">System Information</h2>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-gray-500">Date Added</p>
+              <p>{{ venue.date_added|date:"F j, Y" }}</p>
+            </div>
+            <div>
+              <p class="text-gray-500">Last Updated</p>
+              <p>{{ venue.date_updated|date:"F j, Y" }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

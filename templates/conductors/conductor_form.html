@@ -91,18 +91,6 @@
             <p class="text-red-600 text-xs mt-1">{{ form.notes.errors.0 }}</p>
           {% endif %}
         </div>
-
-        {% if form.types %}
-          <div class="form-group{% if form.types.errors %} has-error{% endif %}">
-            <label for="{{ form.types.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-              Person Types
-            </label>
-            {{ form.types|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-            {% if form.types.errors %}
-              <p class="text-red-600 text-xs mt-1">{{ form.types.errors.0 }}</p>
-            {% endif %}
-          </div>
-        {% endif %}
       </div>
 
 

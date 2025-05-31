@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # 3rd party apps
     "neapolitan",
     "widget_tweaks",
+    "django_filters",
 ]
 
 MIDDLEWARE = [
