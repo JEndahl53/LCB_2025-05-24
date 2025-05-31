@@ -6,7 +6,7 @@ from .models import (
     Arranger,
     Genre,
     Publisher,
-    LoaningOrganization,
+    LendingOrganization,
     BorrowingOrganization,
     RentingOrganization,
     Music,
@@ -47,9 +47,9 @@ class PublisherForm(forms.ModelForm):
         fields = "__all__"
 
 
-class LoaningOrganizationForm(forms.ModelForm):
+class LendingOrganizationForm(forms.ModelForm):
     class Meta:
-        model = LoaningOrganization
+        model = LendingOrganization
         fields = "__all__"
 
 
@@ -74,7 +74,7 @@ class MusicForm(forms.ModelForm):
             "difficulty": forms.Select(attrs={"class": "form-control"}),
             "status": forms.Select(attrs={"class": "form-control"}),
             "date_acquired": forms.DateInput(attrs={"type": "date"}),
-            "loan_start_date": forms.DateInput(attrs={"type": "date"}),
+            "lend_start_date": forms.DateInput(attrs={"type": "date"}),
             "expected_return_date": forms.DateInput(attrs={"type": "date"}),
             "rental_start_date": forms.DateInput(attrs={"type": "date"}),
             "rental_end_date": forms.DateInput(attrs={"type": "date"}),

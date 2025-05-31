@@ -1,4 +1,5 @@
 # concerts/views.py
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.views.generic import (
     ListView,
@@ -6,12 +7,33 @@ from django.views.generic import (
     CreateView,
     UpdateView,
     DeleteView,
+    TemplateView,
 )
 from .forms import ConcertForm, ConductorForm, GuestForm, VenueForm, ConcertProgramForm
 from .models import Concert, Conductor, Guest, Venue, ConcertProgram
 from django.urls import reverse_lazy
 from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
+
+
+class ManageConcertsView(LoginRequiredMixin, TemplateView):
+    """
+    Management dashboard for concert operations - requires authentication.
+    """
+
+    template_name = "admin/manage_concerts.html"
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Add statistics for the dashboard
+        context["concert_count"] = Concert.objects.count()
+        context["conductor_count"] = Conductor.objects.count()
+        context["guest_count"] = Guest.objects.count()
+        context["venue_count"] = Venue.objects.count()
+
+        return context
 
 
 # Conductor views

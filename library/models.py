@@ -99,8 +99,8 @@ class Publisher(models.Model):
         ordering = ["name"]
 
 
-class LoaningOrganization(models.Model):
-    # Group that we loaned must to
+class LendingOrganization(models.Model):
+    # Group that we lend music to
     name = models.CharField(max_length=100, unique=True)
     contact_person = models.CharField(max_length=100, blank=True, null=True)
     contact_email = models.EmailField(blank=True, null=True)
@@ -110,14 +110,14 @@ class LoaningOrganization(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return reverse("loaning_organization_detail", args=[str(self.id)])
+        return reverse("lending_organization_detail", args=[str(self.id)])
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = "Loaning Organization"
-        verbose_name_plural = "Loaning Organizations"
+        verbose_name = "Lending Organization"
+        verbose_name_plural = "Lending Organizations"
         ordering = ["name"]
 
 
@@ -211,11 +211,11 @@ class Music(models.Model):
         max_digits=10, decimal_places=2, blank=True, null=True
     )
     purchase_source = models.CharField(max_length=255, blank=True, null=True)
-    # Loaned music pieces (loaned to)
+    # Leaned music pieces (lend to)
     loaning_organization = models.ForeignKey(
-        LoaningOrganization, on_delete=models.SET_NULL, blank=True, null=True
+        LendingOrganization, on_delete=models.SET_NULL, blank=True, null=True
     )
-    loan_start_date = models.DateField(blank=True, null=True)
+    lend_start_date = models.DateField(blank=True, null=True)
     expected_return_date = models.DateField(blank=True, null=True)
     # Rented music pieces
     renting_organization = models.ForeignKey(

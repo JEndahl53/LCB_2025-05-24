@@ -7,7 +7,7 @@ from .models import (
     Genre,
     Publisher,
     BorrowingOrganization,
-    LoaningOrganization,
+    LendingOrganization,
     RentingOrganization,
     Music,
 )
@@ -94,7 +94,7 @@ class BorrowingOrganizationAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 
-@admin.register(LoaningOrganization)
+@admin.register(LendingOrganization)
 class LoaningOrganizationAdmin(admin.ModelAdmin):
     """
     Admin interface for the LoaningOrganization model.

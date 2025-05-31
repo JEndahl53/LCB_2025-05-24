@@ -1,7 +1,6 @@
 # concerts/urls.py
 from django.urls import path
 
-from common.views import HomePageView
 from .views import (
     ConductorListView,
     ConductorDetailView,
@@ -23,10 +22,14 @@ from .views import (
     ConcertCreateView,
     ConcertUpdateView,
     ConcertDeleteView,
+    ManageConcertsView,
 )
+from library.views import ManageLibraryView
 
 
 urlpatterns = [
+    path("manageconcerts/", ManageConcertsView.as_view(), name="manage_concerts"),
+    path("library/managelibrary/", ManageLibraryView.as_view(), name="manage_library"),
     path("conductors/", ConductorListView.as_view(), name="conductors_list"),
     path(
         "conductors/<int:pk>/", ConductorDetailView.as_view(), name="conductor_detail"

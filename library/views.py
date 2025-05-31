@@ -1,11 +1,12 @@
 # library/views.py
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import (
     ListView,
     DetailView,
     CreateView,
     UpdateView,
     DeleteView,
+    TemplateView,
 )
 from django_filters.views import FilterView
 
@@ -14,7 +15,7 @@ from .forms import (
     ArrangerForm,
     GenreForm,
     PublisherForm,
-    LoaningOrganizationForm,
+    LendingOrganizationForm,
     BorrowingOrganizationForm,
     RentingOrganizationForm,
     MusicForm,
@@ -24,11 +25,12 @@ from .models import (
     Arranger,
     Genre,
     Publisher,
-    LoaningOrganization,
+    LendingOrganization,
     BorrowingOrganization,
     RentingOrganization,
     Music,
 )
+
 from django.urls import reverse_lazy
 from django.views.generic.edit import ModelFormMixin
 from .filters import MusicFilter
@@ -38,6 +40,30 @@ from django.http import JsonResponse
 from django.views.generic import View
 from django.core import serializers
 import json
+
+
+class ManageLibraryView(LoginRequiredMixin, TemplateView):
+    """
+    Management dashboard for library operations - requires authentication.
+    """
+
+    template_name = "admin/manage_library.html"
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Add statistics for the dashboard
+        context["music_count"] = Music.objects.count()
+        context["composer_count"] = Composer.objects.count()
+        context["arranger_count"] = Arranger.objects.count()
+        context["genre_count"] = Genre.objects.count()
+        context["publisher_count"] = Publisher.objects.count()
+        context["lending_org_count"] = LendingOrganization.objects.count()
+        context["borrowing_org_count"] = BorrowingOrganization.objects.count()
+        context["renting_org_count"] = RentingOrganization.objects.count()
+
+        return context
 
 
 # Composer Views
@@ -220,51 +246,51 @@ class PublisherDeleteView(DeleteView):
         return Publisher.objects.all()
 
 
-# LoaningOrganization Views
-class LoaningOrganizationListView(ListView):
-    model = LoaningOrganization
-    template_name = "organizations/loaningorganizations/loaningorganizations_list.html"
-    context_object_name = "loaningorganizations"
+# LendingOrganization Views
+class LendingOrganizationListView(ListView):
+    model = LendingOrganization
+    template_name = "organizations/lendingorganizations/lendingorganizations_list.html"
+    context_object_name = "lendingorganizations"
 
     def get_queryset(self):
-        return LoaningOrganization.objects.all()
+        return LendingOrganization.objects.all()
 
 
-class LoaningOrganizationDetailView(DetailView):
-    model = LoaningOrganization
-    template_name = "organizations/loaningorganizations/loaningorganization_detail.html"
-    context_object_name = "loaningorganization"
-
-    def get_queryset(self):
-        return LoaningOrganization.objects.all()
-
-
-class LoaningOrganizationCreateView(CreateView):
-    model = LoaningOrganization
-    template_name = "organizations/loaningorganizations/loaningorganization_form.html"
-    form_class = LoaningOrganizationForm
-    success_url = reverse_lazy("loaningorganizations_list")
-
-
-class LoaningOrganizationUpdateView(UpdateView):
-    model = LoaningOrganization
-    form_class = LoaningOrganizationForm
-    template_name = "organizations/loaningorganizations/loaningorganization_form.html"
-    success_url = reverse_lazy("loaningorganizations_list")
+class LendingOrganizationDetailView(DetailView):
+    model = LendingOrganization
+    template_name = "organizations/lendingorganizations/lendingorganization_detail.html"
+    context_object_name = "lendingorganization"
 
     def get_queryset(self):
-        return LoaningOrganization.objects.all()
+        return LendingOrganization.objects.all()
 
 
-class LoaningOrganizationDeleteView(DeleteView):
-    model = LoaningOrganization
+class LendingOrganizationCreateView(CreateView):
+    model = LendingOrganization
+    template_name = "organizations/lendingorganizations/lendingorganization_form.html"
+    form_class = LendingOrganizationForm
+    success_url = reverse_lazy("lendingorganizations_list")
+
+
+class LendingOrganizationUpdateView(UpdateView):
+    model = LendingOrganization
+    form_class = LendingOrganizationForm
+    template_name = "organizations/lendingorganizations/lendingorganization_form.html"
+    success_url = reverse_lazy("lendingorganizations_list")
+
+    def get_queryset(self):
+        return LendingOrganization.objects.all()
+
+
+class LendingOrganizationDeleteView(DeleteView):
+    model = LendingOrganization
     template_name = (
-        "organizations/loaningorganizations/loaningorganization_confirm_delete.html"
+        "organizations/lendingorganizations/lendingorganization_confirm_delete.html"
     )
-    success_url = reverse_lazy("loaningorganizations_list")
+    success_url = reverse_lazy("lendingorganizations_list")
 
     def get_queryset(self):
-        return LoaningOrganization.objects.all()
+        return LendingOrganization.objects.all()
 
 
 # BorrowingOrganization Views

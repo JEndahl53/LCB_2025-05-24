@@ -1,23 +1,23 @@
-<!-- templates/loaningorganizations/loaningorganizations_list.html -->
+<!-- templates/lendingorganizations/lendingorganizations_list.html -->
 {% extends "_base.html" %}
 {% load static %}
 
-{% block title %}Loaning Organizations List{% endblock %}
+{% block title %}Lending Organizations List{% endblock %}
 
 {% block content %}
   <div class="bg-white rounded-lg shadow-md p-6">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-gray-800">
-        <i class="fas fa-user-edit mr-2 text-blue-500"></i>Loaning Organizations List
+        <i class="fas fa-user-edit mr-2 text-blue-500"></i>Lending Organizations List
       </h1>
-      <a href="{% url 'loaningorganization_create' %}"
+      <a href="{% url 'lendingorganization_create' %}"
          class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition flex items-center">
-        <i class="fas fa-plus mr-2"></i> Add Loaning Organization
+        <i class="fas fa-plus mr-2"></i> Add Lending Organization
       </a>
     </div>
 
     <div class="overflow-x-auto">
-      {% if loaningorganizations %}
+      {% if lendingorganizations %}
         <table class="min-w-full bg-white">
           <thead class="bg-gray-100 text-gray-800">
           <tr>
@@ -26,22 +26,22 @@
           </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-          {% for loaningorganization in loaningorganizations %}
+          {% for lendingorganization in lendingorganizations %}
             <tr class="hover:bg-gray-50">
               <td class="py-3 px-4">
-                <a href="{% url 'loaningorganization_detail' loaningorganization.id %}"
+                <a href="{% url 'lendingorganization_detail' lendingorganization.id %}"
                    class="text-blue-600 hover:text-blue-800 font-medium">
-                  {{ loaningorganization.name }}
+                  {{ lendingorganization.name }}
                 </a>
               </td>
 
               <td class="py-3 px-4 text-center">
-                <a href="{% url 'loaningorganization_update' loaningorganization.pk %}"
+                <a href="{% url 'lendingorganization_update' lendingorganization.pk %}"
                    class="text-yellow-600 hover:text-yellow-800 mx-1"
                    title="Edit">
                   <i class="fas fa-edit"></i>
                 </a>
-                <a href="{% url 'loaningorganization_delete' loaningorganization.pk %}"
+                <a href="{% url 'lendingorganization_delete' lendingorganization.pk %}"
                    class="text-red-600 hover:text-red-800 mx-1"
                    title="Delete">
                   <i class="fas fa-trash-alt"></i>
@@ -54,10 +54,10 @@
       {% else %}
         <div class="text-center py-8 bg-gray-50 rounded-lg">
           <i class="fas fa-info-circle text-gray-400 text-4xl mb-4"></i>
-          <p class="text-gray-600">No Loaning Organizations found in the database.</p>
-          <a href="{% url 'loaningorganization_create' %}"
+          <p class="text-gray-600">No Lending Organizations found in the database.</p>
+          <a href="{% url 'lendingorganization_create' %}"
              class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
-            <i class="fas fa-plus mr-2"></i> Add Your First Loaning Organization
+            <i class="fas fa-plus mr-2"></i> Add Your First Lending Organization
           </a>
         </div>
       {% endif %}

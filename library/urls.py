@@ -24,11 +24,11 @@ from library.views import (
     PublisherCreateView,
     PublisherUpdateView,
     PublisherDeleteView,
-    LoaningOrganizationListView,
-    LoaningOrganizationDetailView,
-    LoaningOrganizationCreateView,
-    LoaningOrganizationUpdateView,
-    LoaningOrganizationDeleteView,
+    LendingOrganizationListView,
+    LendingOrganizationDetailView,
+    LendingOrganizationCreateView,
+    LendingOrganizationUpdateView,
+    LendingOrganizationDeleteView,
     BorrowingOrganizationListView,
     BorrowingOrganizationDetailView,
     BorrowingOrganizationCreateView,
@@ -44,12 +44,16 @@ from library.views import (
     MusicCreateView,
     MusicUpdateView,
     MusicDeleteView,
+    ManageLibraryView,
 )
-
+from concerts.views import ManageConcertsView
 
 urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
-    # Composer URLs
+    path("managelibrary/", ManageLibraryView.as_view(), name="manage_library"),
+    path(
+        "concerts/manageconcerts/", ManageConcertsView.as_view(), name="manage_concerts"
+    ),
     path("composers/", ComposerListView.as_view(), name="composers_list"),
     path(
         "composers/<int:pk>/",
@@ -115,31 +119,31 @@ urlpatterns = [
         PublisherDeleteView.as_view(),
         name="publisher_delete",
     ),
-    # LoaningOrganizations views
+    # LendingOrganizations views
     path(
-        "loaningorganizations/",
-        LoaningOrganizationListView.as_view(),
-        name="loaningorganizations_list",
+        "lendingorganizations/",
+        LendingOrganizationListView.as_view(),
+        name="lendingorganizations_list",
     ),
     path(
-        "loaningorganizations/<int:pk>/",
-        LoaningOrganizationDetailView.as_view(),
-        name="loaningorganization_detail",
+        "lendingorganizations/<int:pk>/",
+        LendingOrganizationDetailView.as_view(),
+        name="lendingorganization_detail",
     ),
     path(
-        "loaningorganizations/create/",
-        LoaningOrganizationCreateView.as_view(),
-        name="loaningorganization_create",
+        "lendingorganizations/create/",
+        LendingOrganizationCreateView.as_view(),
+        name="lendingorganization_create",
     ),
     path(
-        "loaningorganizations/<int:pk>/update/",
-        LoaningOrganizationUpdateView.as_view(),
-        name="loaningorganization_update",
+        "lendingorganizations/<int:pk>/update/",
+        LendingOrganizationUpdateView.as_view(),
+        name="lendingorganization_update",
     ),
     path(
-        "loaningorganizations/<int:pk>/delete/",
-        LoaningOrganizationDeleteView.as_view(),
-        name="loaningorganization_delete",
+        "lendingorganizations/<int:pk>/delete/",
+        LendingOrganizationDeleteView.as_view(),
+        name="lendingorganization_delete",
     ),
     # BorrowingOrganizations views
     path(

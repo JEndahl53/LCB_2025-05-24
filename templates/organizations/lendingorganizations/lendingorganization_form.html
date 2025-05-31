@@ -1,16 +1,16 @@
-<!-- templates/loaningorganizations/loaningorganization_form.html -->
+<!-- templates/lendingorganizations/lendingorganization_form.html -->
 {% extends "_base.html" %}
 {% load static %}
 {% load widget_tweaks %}
 
-{% block title %}{% if loaningorganization %}Edit{% else %}Create{% endif %} Loaning Organization{% endblock %}
+{% block title %}{% if lendingorganization %}Edit{% else %}Create{% endif %} Lending Organization{% endblock %}
 
 {% block content %}
   <div class="bg-white rounded-lg shadow-md p-6">
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-800">
-        <i class="fas fa-{% if loaningorganization %}edit{% else %}plus{% endif %} mr-2 text-blue-500"></i>
-        {% if loaningorganization %}Edit{% else %}Create{% endif %} Loaning Organization
+        <i class="fas fa-{% if lendingorganization %}edit{% else %}plus{% endif %} mr-2 text-blue-500"></i>
+        {% if lendingorganization %}Edit{% else %}Create{% endif %} Lending Organization
       </h1>
     </div>
 
@@ -108,13 +108,13 @@
       </div>
 
       <div class="flex justify-between pt-4 border-t">
-        <a href="{% url 'loaningorganizations_list' %}"
+        <a href="{% url 'lendingorganizations_list' %}"
            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition">
           <i class="fas fa-times mr-2"></i> Cancel
         </a>
         <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
-          <i class="fas fa-{% if loaningorganization %}save{% else %}plus{% endif %} mr-2"></i>
-          {% if loaningorganization %}Update{% else %}Create{% endif %} Loaning Organization
+          <i class="fas fa-{% if lendingorganization %}save{% else %}plus{% endif %} mr-2"></i>
+          {% if lendingorganization %}Update{% else %}Create{% endif %} Lending Organization
         </button>
       </div>
     </form>
