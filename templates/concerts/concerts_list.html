@@ -10,10 +10,12 @@
       <h1 class="text-2xl font-bold text-gray-800">
         <i class="fas fa-user-edit mr-2 text-blue-500"></i>Concerts List
       </h1>
-      <a href="{% url 'concert_create' %}"
-         class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition flex items-center">
-        <i class="fas fa-plus mr-2"></i> Add Concert
-      </a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'concert_create' %}"
+           class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition flex items-center">
+          <i class="fas fa-plus mr-2"></i> Add Concert
+        </a>
+      {% endif %}
     </div>
 
     <div class="overflow-x-auto">
@@ -33,15 +35,22 @@
                   {{ concert.title }}
                 </a>
               </td>
-              <td class="py-3 px-4 text-center">
-                <a href="{% url 'concert_update' concert.pk %}" class="text-yellow-600 hover:text-yellow-800 mx-1"
-                   title="Edit">
-                  <i class="fas fa-edit"></i>
+              <td class="px-3 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <a href="{% url 'concert_detail' concert.id %}"
+                   class="text-blue-600 hover:text-blue-800 mr-3">
+                  <i class="fas fa-eye"></i>
                 </a>
-                <a href="{% url 'concert_delete' concert.pk %}" class="text-red-600 hover:text-red-800 mx-1"
-                   title="Delete">
-                  <i class="fas fa-trash-alt"></i>
-                </a>
+                {% if user.is_authenticated %}
+                  <a href="{% url 'concert_update' concert.pk %}" class="text-yellow-600 hover:text-yellow-800 mx-1"
+                     title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <a href="{% url 'concert_delete' concert.pk %}" class="text-red-600 hover:text-red-800 mx-1"
+                     title="Delete">
+                    <i class="fas fa-trash-alt"></i>
+                  </a>
+                {% endif %}
+
               </td>
             </tr>
           {% endfor %}

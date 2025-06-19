@@ -13,7 +13,6 @@ from .forms import ConcertForm, ConductorForm, GuestForm, VenueForm, ConcertProg
 from .models import Concert, Conductor, Guest, Venue, ConcertProgram
 from django.urls import reverse_lazy
 from django.forms import inlineformset_factory
-from django.shortcuts import render, redirect, get_object_or_404
 
 
 class ManageConcertsView(LoginRequiredMixin, TemplateView):
@@ -55,27 +54,30 @@ class ConductorDetailView(DetailView):
         return Conductor.objects.all()
 
 
-class ConductorCreateView(CreateView):
+class ConductorCreateView(LoginRequiredMixin, CreateView):
     model = Conductor
     template_name = "conductors/conductor_form.html"
     form_class = ConductorForm
     success_url = reverse_lazy("conductors_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
 
-class ConductorUpdateView(UpdateView):
+class ConductorUpdateView(LoginRequiredMixin, UpdateView):
     model = Conductor
     form_class = ConductorForm
     template_name = "conductors/conductor_form.html"
     success_url = reverse_lazy("conductors_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Conductor.objects.all()
 
 
-class ConductorDeleteView(DeleteView):
+class ConductorDeleteView(LoginRequiredMixin, DeleteView):
     model = Conductor
     template_name = "conductors/conductor_confirm_delete.html"
     success_url = reverse_lazy("conductors_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Conductor.objects.all()
@@ -100,27 +102,30 @@ class GuestDetailView(DetailView):
         return Guest.objects.all()
 
 
-class GuestCreateView(CreateView):
+class GuestCreateView(LoginRequiredMixin, CreateView):
     model = Guest
     template_name = "guests/guest_form.html"
     form_class = GuestForm
     success_url = reverse_lazy("guests_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
 
-class GuestUpdateView(UpdateView):
+class GuestUpdateView(LoginRequiredMixin, UpdateView):
     model = Guest
     form_class = GuestForm
     template_name = "guests/guest_form.html"
     success_url = reverse_lazy("guests_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Guest.objects.all()
 
 
-class GuestDeleteView(DeleteView):
+class GuestDeleteView(LoginRequiredMixin, DeleteView):
     model = Guest
     template_name = "guests/guest_confirm_delete.html"
     success_url = reverse_lazy("guests_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Guest.objects.all()
@@ -145,27 +150,30 @@ class VenueDetailView(DetailView):
         return Venue.objects.all()
 
 
-class VenueCreateView(CreateView):
+class VenueCreateView(LoginRequiredMixin, CreateView):
     model = Venue
     template_name = "venues/venue_form.html"
     form_class = VenueForm
     success_url = reverse_lazy("venues_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
 
-class VenueUpdateView(UpdateView):
+class VenueUpdateView(LoginRequiredMixin, UpdateView):
     model = Venue
     form_class = VenueForm
     template_name = "venues/venue_form.html"
     success_url = reverse_lazy("venues_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Venue.objects.all()
 
 
-class VenueDeleteView(DeleteView):
+class VenueDeleteView(LoginRequiredMixin, DeleteView):
     model = Venue
     template_name = "venues/venue_confirm_delete.html"
     success_url = reverse_lazy("venues_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Venue.objects.all()
@@ -195,48 +203,28 @@ ConcertProgramFormSet = inlineformset_factory(
 )
 
 
-class ConcertCreateView(CreateView):
+class ConcertCreateView(LoginRequiredMixin, CreateView):
     model = Concert
     template_name = "concerts/concert_form.html"
     form_class = ConcertForm
     success_url = reverse_lazy("concerts_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data["program_formset"] = ConcertProgramFormSet(self.request.POST)
-        else:
-            data["program_formset"] = ConcertProgramFormSet()
-        return data
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        program_formset = context["formset"]
-
-        with transaction.atomic():
-            if form.is_valid() and program_formset.is_valid():
-                self.object = form.save()
-                program_formset.instance = self.object
-                program_formset.save()
-                return super().form_valid(form)
-            else:
-                return self.form_invalid(form)
-
-
-class ConcertUpdateView(UpdateView):
-    model = Concert
-    form_class = ConcertForm
-    template_name = "concerts/concert_form.html"
-    success_url = reverse_lazy("concerts_list")
+    def get_form_kwargs(self):
+        """Include request.FILES in form kwargs."""
+        kwargs = super().get_form_kwargs()
+        if self.request.method in ["POST", "PUT"]:
+            kwargs.update({"data": self.request.POST, "files": self.request.FILES})
+        return kwargs
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.request.POST:
             data["program_formset"] = ConcertProgramFormSet(
-                self.request.POST, instance=self.object
+                self.request.POST, self.request.FILES
             )
         else:
-            data["program_formset"] = ConcertProgramFormSet(instance=self.object)
+            data["program_formset"] = ConcertProgramFormSet()
         return data
 
     def form_valid(self, form):
@@ -252,14 +240,61 @@ class ConcertUpdateView(UpdateView):
             else:
                 return self.form_invalid(form)
 
+
+class ConcertUpdateView(LoginRequiredMixin, UpdateView):
+    model = Concert
+    form_class = ConcertForm
+    template_name = "concerts/concert_form.html"
+    success_url = reverse_lazy("concerts_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
+
+    def get_form_kwargs(self):
+        """Include request.FILES in form kwargs."""
+        kwargs = super().get_form_kwargs()
+        if self.request.method in ["POST", "PUT"]:
+            kwargs.update({"data": self.request.POST, "files": self.request.FILES})
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data["program_formset"] = ConcertProgramFormSet(
+                self.request.POST, self.request.FILES, instance=self.object
+            )
+        else:
+            data["program_formset"] = ConcertProgramFormSet(instance=self.object)
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        program_formset = context["program_formset"]
+
+        # Troubleshooting output
+        print("form.is_valid():", form.is_valid())
+        print("program_formset.is_valid():", program_formset.is_valid())
+        if not form.is_valid():
+            print("form.errors:", form.errors)
+        if not program_formset.is_valid():
+            print("program_formset.errors:", program_formset.errors)
+
+        with transaction.atomic():
+            if form.is_valid() and program_formset.is_valid():
+                self.object = form.save()
+                program_formset.instance = self.object
+                program_formset.save()
+                return super().form_valid(form)
+            else:
+                return self.form_invalid(form)
+
     def get_queryset(self):
         return Concert.objects.all()
 
 
-class ConcertDeleteView(DeleteView):
+class ConcertDeleteView(LoginRequiredMixin, DeleteView):
     model = Concert
     template_name = "concerts/concert_confirm_delete.html"
     success_url = reverse_lazy("concerts_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Concert.objects.all()

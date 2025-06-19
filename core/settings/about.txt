@@ -1,0 +1,1 @@
+This layout of the local and prod settings file comes from the Kindle "Django 5 by Example" by Antonio Mele

@@ -85,27 +85,30 @@ class ComposerDetailView(DetailView):
         return Composer.objects.all()
 
 
-class ComposerCreateView(CreateView):
+class ComposerCreateView(LoginRequiredMixin, CreateView):
     model = Composer
     template_name = "composers/composer_form.html"
     form_class = ComposerForm
     success_url = reverse_lazy("composers_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
 
-class ComposerUpdateView(UpdateView):
+class ComposerUpdateView(LoginRequiredMixin, UpdateView):
     model = Composer
     form_class = ComposerForm
     template_name = "composers/composer_form.html"
     success_url = reverse_lazy("composers_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Composer.objects.all()
 
 
-class ComposerDeleteView(DeleteView):
+class ComposerDeleteView(LoginRequiredMixin, DeleteView):
     model = Composer
     template_name = "composers/composer_confirm_delete.html"
     success_url = reverse_lazy("composers_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Composer.objects.all()
@@ -130,27 +133,30 @@ class ArrangerDetailView(DetailView):
         return Arranger.objects.all()
 
 
-class ArrangerCreateView(CreateView):
+class ArrangerCreateView(LoginRequiredMixin, CreateView):
     model = Arranger
     template_name = "arrangers/arranger_form.html"
     form_class = ArrangerForm
     success_url = reverse_lazy("arrangers_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
 
-class ArrangerUpdateView(UpdateView):
+class ArrangerUpdateView(LoginRequiredMixin, UpdateView):
     model = Arranger
     form_class = ArrangerForm
     template_name = "arrangers/arranger_form.html"
     success_url = reverse_lazy("arrangers_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Arranger.objects.all()
 
 
-class ArrangerDeleteView(DeleteView):
+class ArrangerDeleteView(LoginRequiredMixin, DeleteView):
     model = Arranger
     template_name = "arrangers/arranger_confirm_delete.html"
     success_url = reverse_lazy("arrangers_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Arranger.objects.all()
@@ -175,27 +181,30 @@ class GenreDetailView(DetailView):
         return Genre.objects.all()
 
 
-class GenreCreateView(CreateView):
+class GenreCreateView(LoginRequiredMixin, CreateView):
     model = Genre
     template_name = "genres/genre_form.html"
     form_class = GenreForm
     success_url = reverse_lazy("genres_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
 
-class GenreUpdateView(UpdateView):
+class GenreUpdateView(LoginRequiredMixin, UpdateView):
     model = Genre
     form_class = GenreForm
     template_name = "genres/genre_form.html"
     success_url = reverse_lazy("genres_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Genre.objects.all()
 
 
-class GenreDeleteView(DeleteView):
+class GenreDeleteView(LoginRequiredMixin, DeleteView):
     model = Genre
     template_name = "genres/genre_confirm_delete.html"
     success_url = reverse_lazy("genres_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Genre.objects.all()
@@ -220,27 +229,30 @@ class PublisherDetailView(DetailView):
         return Publisher.objects.all()
 
 
-class PublisherCreateView(CreateView):
+class PublisherCreateView(LoginRequiredMixin, CreateView):
     model = Publisher
     template_name = "publishers/publisher_form.html"
     form_class = PublisherForm
     success_url = reverse_lazy("publishers_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
 
-class PublisherUpdateView(UpdateView):
+class PublisherUpdateView(LoginRequiredMixin, UpdateView):
     model = Publisher
     form_class = PublisherForm
     template_name = "publishers/publisher_form.html"
     success_url = reverse_lazy("publishers_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Publisher.objects.all()
 
 
-class PublisherDeleteView(DeleteView):
+class PublisherDeleteView(LoginRequiredMixin, DeleteView):
     model = Publisher
     template_name = "publishers/publisher_confirm_delete.html"
     success_url = reverse_lazy("publishers_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return Publisher.objects.all()
@@ -265,29 +277,32 @@ class LendingOrganizationDetailView(DetailView):
         return LendingOrganization.objects.all()
 
 
-class LendingOrganizationCreateView(CreateView):
+class LendingOrganizationCreateView(LoginRequiredMixin, CreateView):
     model = LendingOrganization
     template_name = "organizations/lendingorganizations/lendingorganization_form.html"
     form_class = LendingOrganizationForm
     success_url = reverse_lazy("lendingorganizations_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
 
-class LendingOrganizationUpdateView(UpdateView):
+class LendingOrganizationUpdateView(LoginRequiredMixin, UpdateView):
     model = LendingOrganization
     form_class = LendingOrganizationForm
     template_name = "organizations/lendingorganizations/lendingorganization_form.html"
     success_url = reverse_lazy("lendingorganizations_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return LendingOrganization.objects.all()
 
 
-class LendingOrganizationDeleteView(DeleteView):
+class LendingOrganizationDeleteView(LoginRequiredMixin, DeleteView):
     model = LendingOrganization
     template_name = (
         "organizations/lendingorganizations/lendingorganization_confirm_delete.html"
     )
     success_url = reverse_lazy("lendingorganizations_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return LendingOrganization.objects.all()
@@ -316,22 +331,24 @@ class BorrowingOrganizationDetailView(DetailView):
         return BorrowingOrganization.objects.all()
 
 
-class BorrowingOrganizationCreateView(CreateView):
+class BorrowingOrganizationCreateView(LoginRequiredMixin, CreateView):
     model = BorrowingOrganization
     template_name = (
         "organizations/borrowingorganizations/borrowingorganization_form.html"
     )
     form_class = BorrowingOrganizationForm
     success_url = reverse_lazy("borrowingorganizations_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
 
-class BorrowingOrganizationUpdateView(UpdateView):
+class BorrowingOrganizationUpdateView(LoginRequiredMixin, UpdateView):
     model = BorrowingOrganization
     form_class = BorrowingOrganizationForm
     template_name = (
         "organizations/borrowingorganizations/borrowingorganization_form.html"
     )
     success_url = reverse_lazy("borrowingorganizations_list")
+    login_url = reverse_lazy("home")  # redirect to home if not authenticated
 
     def get_queryset(self):
         return BorrowingOrganization.objects.all()

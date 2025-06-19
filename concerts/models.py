@@ -155,7 +155,7 @@ class Concert(models.Model):
     venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null=True)
     conductor = models.ManyToManyField(Conductor, blank=True)
     guest = models.ManyToManyField(Guest, blank=True)
-    poster = models.ImageField(upload_to="posters/", blank=True, null=True)
+    poster = models.ImageField(upload_to="posters/", blank=True)
     description = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -172,6 +172,12 @@ class Concert(models.Model):
 
     def get_absolute_url(self):
         return reverse("concert_detail", args=[str(self.id)])
+
+    def get_conductors_display(self):
+        return "; ".join(str(conductor) for conductor in self.conductor.all())
+
+    def get_guests_display(self):
+        return "; ".join(str(guest) for guest in self.guest.all())
 
 
 # Now create the linking file
