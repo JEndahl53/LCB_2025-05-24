@@ -1,8 +1,8 @@
-<!-- templates/organizations/loaningorganization_detail.html -->
+<!-- templates/organizations/lendingorganization_detail.html -->
 {% extends "_base.html" %}
 {% load static %}
 
-{% block title %}{{ loaningorganization.get_full_name }} - Loaning Organization Detail{% endblock %}
+{% block title %}{{ lendingorganization.get_full_name }} - Loaning Organization Detail{% endblock %}
 
 {% block content %}
   <div class="bg-white rounded-lg shadow-md p-6">
@@ -11,15 +11,15 @@
         <i class="fas fa-user mr-2 text-blue-500"></i>Loaning Organization Detail
       </h1>
       <div class="space-x-2">
-        <a href="{% url 'loaningorganization_update' loaningorganization.pk %}"
+        <a href="{% url 'lendingorganization_update' lendingorganization.pk %}"
            class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-md transition">
           <i class="fas fa-edit mr-1"></i> Edit
         </a>
-        <a href="{% url 'loaningorganization_delete' loaningorganization.pk %}"
+        <a href="{% url 'lendingorganization_delete' lendingorganization.pk %}"
            class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md transition">
           <i class="fas fa-trash-alt mr-1"></i> Delete
         </a>
-        <a href="{% url 'loaningorganizations_list' %}"
+        <a href="{% url 'lendingorganizations_list' %}"
            class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition">
           <i class="fas fa-arrow-left mr-1"></i> Back
         </a>
@@ -33,27 +33,27 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <p class="text-sm text-gray-500">Organization Name</p>
-              <p class="font-medium">{{ loaningorganization.name }}</p>
+              <p class="font-medium">{{ lendingorganization.name }}</p>
             </div>
           </div>
           <div>
             <p class="text-sm text-gray-500">Contact Person</p>
-            <p class="font-medium">{{ loaningorganization.contact_person }}</p>
+            <p class="font-medium">{{ lendingorganization.contact_person }}</p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Contact Email</p>
-            <p class="font-medium">{{ loaningorganization.contact_email }}</p>
+            <p class="font-medium">{{ lendingorganization.contact_email }}</p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Contact Phone</p>
-            <p class="font-medium">{{ loaningorganization.contact_phone }}</p>
+            <p class="font-medium">{{ lendingorganization.contact_phone }}</p>
           </div>
         </div>
 
-        {% if loaningorganization.notes %}
+        {% if lendingorganization.notes %}
           <div class="bg-gray-50 p-4 rounded-lg">
             <h2 class="text-lg font-semibold text-gray-700 mb-2">Notes</h2>
-            <p class="text-gray-700">{{ loaningorganization.notes }}</p>
+            <p class="text-gray-700">{{ lendingorganization.notes }}</p>
           </div>
         {% endif %}
       </div>
@@ -61,9 +61,9 @@
       <div class="space-y-4">
         <div class="bg-blue-50 p-4 rounded-lg">
           <h2 class="text-lg font-semibold text-blue-700 mb-2">Works in Library</h2>
-          {% if loaningorganization.music_set.exists %}
+          {% if lendingorganization.music_set.exists %}
             <ul class="divide-y divide-blue-100">
-              {% for music in loaningorganization.music_set.all %}
+              {% for music in lendingorganization.music_set.all %}
                 <li class="py-2">
                   <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">{{ music.title }}</a>
                   <span class="text-gray-500 text-sm">{{ music.genre }}</span>
@@ -80,11 +80,11 @@
           <div class="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p class="text-gray-500">Date Added</p>
-              <p>{{ loaningorganization.date_added|date:"F j, Y" }}</p>
+              <p>{{ lendingorganization.date_added|date:"F j, Y" }}</p>
             </div>
             <div>
               <p class="text-gray-500">Last Updated</p>
-              <p>{{ loaningorganization.date_updated|date:"F j, Y" }}</p>
+              <p>{{ lendingorganization.date_updated|date:"F j, Y" }}</p>
             </div>
           </div>
         </div>

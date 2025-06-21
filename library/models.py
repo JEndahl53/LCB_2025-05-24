@@ -212,7 +212,7 @@ class Music(models.Model):
     )
     purchase_source = models.CharField(max_length=255, blank=True, null=True)
     # Leaned music pieces (lend to)
-    loaning_organization = models.ForeignKey(
+    lending_organization = models.ForeignKey(
         LendingOrganization, on_delete=models.SET_NULL, blank=True, null=True
     )
     lend_start_date = models.DateField(blank=True, null=True)

@@ -95,7 +95,7 @@ class BorrowingOrganizationAdmin(admin.ModelAdmin):
 
 
 @admin.register(LendingOrganization)
-class LoaningOrganizationAdmin(admin.ModelAdmin):
+class LendingOrganizationAdmin(admin.ModelAdmin):
     """
     Admin interface for the LoaningOrganization model.
     """
@@ -144,7 +144,7 @@ class MusicAdmin(admin.ModelAdmin):
         "location_number",
         "get_genre",
         "publisher",
-        "loaning_organization",
+        "lending_organization",
         "borrowing_organization",
         "renting_organization",
     )

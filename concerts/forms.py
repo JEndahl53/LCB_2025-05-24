@@ -24,7 +24,25 @@ class VenueForm(forms.ModelForm):
 class ConcertForm(forms.ModelForm):
     class Meta:
         model = Concert
-        fields = "__all__"
+        fields = ["title", "date", "time", "venue", "poster", "description"]
+        widgets = {
+            "date": forms.DateInput(attrs={"type": "datetime-local"}),
+            "time": forms.TimeInput(attrs={"type": "time"}),
+            "description": forms.Textarea(attrs={"rows": 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add CSS classes to form fields
+        for field_name, field in self.fields.items():
+            if field_name == "description":
+                field.widget.attrs["class"] = (
+                    "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                )
+            else:
+                field.widget.attrs["class"] = (
+                    "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                )
 
 
 class ConcertProgramForm(forms.ModelForm):

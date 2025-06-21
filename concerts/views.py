@@ -219,6 +219,19 @@ class ConcertCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
+
+        # Get all conductors and guests for the selection interface
+        data["all_conductors"] = list(
+            Conductor.objects.order_by("last_name").values(
+                "id", "first_name", "last_name", "title"
+            )
+        )
+        data["all_guests"] = list(
+            Guest.objects.order_by("last_name").values("id", "first_name", "last_name")
+        )
+        data["assigned_conductors"] = []  # Empty for new concerts
+        data["assigned_guests"] = []  # Empty for new concerts
+
         if self.request.POST:
             data["program_formset"] = ConcertProgramFormSet(
                 self.request.POST, self.request.FILES
@@ -234,6 +247,19 @@ class ConcertCreateView(LoginRequiredMixin, CreateView):
         with transaction.atomic():
             if form.is_valid() and program_formset.is_valid():
                 self.object = form.save()
+
+                # Handle conductors
+                conductor_ids = self.request.POST.getlist("conductors")
+                if conductor_ids:
+                    conductors = Conductor.objects.filter(id__in=conductor_ids)
+                    self.object.conductor.set(conductors)
+
+                # Handle guests
+                guest_ids = self.request.POST.getlist("guests")
+                if guest_ids:
+                    guests = Guest.objects.filter(id__in=guest_ids)
+                    self.object.guest.set(guests)
+
                 program_formset.instance = self.object
                 program_formset.save()
                 return super().form_valid(form)
@@ -257,6 +283,25 @@ class ConcertUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
+
+        # Get all conductors and guests for the selection interface
+        data["all_conductors"] = list(
+            Conductor.objects.order_by("last_name").values(
+                "id", "first_name", "last_name", "title"
+            )
+        )
+        data["all_guests"] = list(
+            Guest.objects.order_by("last_name").values("id", "first_name", "last_name")
+        )
+
+        # Get currently assigned conductors and guests
+        data["assigned_conductors"] = list(
+            self.object.conductor.values("id", "first_name", "last_name", "title")
+        )
+        data["assigned_guests"] = list(
+            self.object.guest.values("id", "first_name", "last_name")
+        )
+
         if self.request.POST:
             data["program_formset"] = ConcertProgramFormSet(
                 self.request.POST, self.request.FILES, instance=self.object
@@ -269,17 +314,24 @@ class ConcertUpdateView(LoginRequiredMixin, UpdateView):
         context = self.get_context_data()
         program_formset = context["program_formset"]
 
-        # Troubleshooting output
-        print("form.is_valid():", form.is_valid())
-        print("program_formset.is_valid():", program_formset.is_valid())
-        if not form.is_valid():
-            print("form.errors:", form.errors)
-        if not program_formset.is_valid():
-            print("program_formset.errors:", program_formset.errors)
-
         with transaction.atomic():
             if form.is_valid() and program_formset.is_valid():
                 self.object = form.save()
+
+                # Handle conductors
+                conductor_ids = self.request.POST.getlist("conductors")
+                conductors = (
+                    Conductor.objects.filter(id__in=conductor_ids)
+                    if conductor_ids
+                    else []
+                )
+                self.object.conductor.set(conductors)
+
+                # Handle guests
+                guest_ids = self.request.POST.getlist("guests")
+                guests = Guest.objects.filter(id__in=guest_ids) if guest_ids else []
+                self.object.guest.set(guests)
+
                 program_formset.instance = self.object
                 program_formset.save()
                 return super().form_valid(form)

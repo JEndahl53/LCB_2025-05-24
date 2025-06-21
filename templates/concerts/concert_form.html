@@ -7,84 +7,355 @@
 {% endblock %}
 
 {% block content %}
-  <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
-    <h2 class="text-2xl font-bold mb-4">
+  {{ all_conductors|json_script:"all-conductors" }}
+  {{ all_guests|json_script:"all-guests" }}
+  {{ assigned_conductors|json_script:"assigned-conductors" }}
+  {{ assigned_guests|json_script:"assigned-guests" }}
+
+  <div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-lg"
+       x-data="concertForm(
+          JSON.parse(document.getElementById('all-conductors').textContent),
+          JSON.parse(document.getElementById('all-guests').textContent),
+          JSON.parse(document.getElementById('assigned-conductors').textContent),
+          JSON.parse(document.getElementById('assigned-guests').textContent)
+       )">
+
+    <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+      <i class="fas fa-music text-blue-500 mr-3"></i>
       {% if concert %}Edit{% else %}Create{% endif %} Concert
     </h2>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" @submit="submitForm">
       {% csrf_token %}
+
+      <!-- Hidden inputs for conductors and guests -->
+      <template x-for="conductorId in selectedConductors" :key="conductorId">
+        <input type="hidden" name="conductors" :value="conductorId">
+      </template>
+      <template x-for="guestId in selectedGuests" :key="guestId">
+        <input type="hidden" name="guests" :value="guestId">
+      </template>
 
       <!-- Show errors for the main form -->
       {% for field in form %}
         {% if field.errors %}
-          <div class="text-red-600 mb-2">{{ field.errors.0 }}</div>
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+            <i class="fas fa-exclamation-triangle mr-2"></i>{{ field.errors.0 }}
+          </div>
         {% endif %}
       {% endfor %}
 
-      <!-- Render all Concert fields -->
-      <div class="mb-4">
-        <label class="block font-semibold">Title</label>
-        {% render_field form.title class="input input-bordered w-full" %}
-      </div>
-      <div class="mb-4">
-        <label class="block font-semibold">Date</label>
-        {% render_field form.date class="input input-bordered w-full" %}
-      </div>
-      <div class="mb-4">
-        <label class="block font-semibold">Time</label>
-        {% render_field form.time class="input input-bordered w-full" %}
-      </div>
-      <div class="mb-4">
-        <label class="block font-semibold">Venue</label>
-        {% render_field form.venue class="input input-bordered w-full" %}
-      </div>
-      <div class="mb-4">
-        <label class="block font-semibold">Conductor(s)</label>
-        {% render_field form.conductor class="input input-bordered w-full" %}
-      </div>
-      <div class="mb-4">
-        <label class="block font-semibold">Guest(s)</label>
-        {% render_field form.guest class="input input-bordered w-full" %}
-      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left Column - Basic Information -->
+        <div class="space-y-4">
+          <h3 class="text-xl font-semibold text-gray-700 border-b pb-2">Basic Information</h3>
 
-      <!-- ConcertProgram formset for assigning music and order -->
-      <h3 class="text-xl font-bold mt-8 mb-4">Program</h3>
-      {{ program_formset.management_form }}
-      <div>
-        {% for form in program_formset %}
-          <div class="flex items-center mb-4 border-b pb-2">
-            <div class="flex-1 mr-2">
-              {#              <label class="block font-semibold">Music Piece</label>#}
-              {% render_field form.music class="input input-bordered w-full" %}
+          <!-- Title -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              <i class="fas fa-tag mr-1"></i>Title *
+            </label>
+            {{ form.title }}
+          </div>
+
+          <!-- Date and time -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                <i class="fas fa-calendar mr-1"></i>Date
+              </label>
+              {{ form.date }}
             </div>
-            <div class="w-32 mr-2">
-              {#              <label class="block font-semibold">Order</label>#}
-              {% render_field form.performance_order class="input input-bordered" %}
-            </div>
-            <div class="w-12">
-              {% if form.instance.pk %}
-                <label class="block font-semibold">Delete</label>
-                {% render_field form.DELETE %}
-              {% endif %}
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                <i class="fas fa-clock mr-1"></i>Time
+              </label>
+              {{ form.time }}
             </div>
           </div>
-        {% endfor %}
+
+          <!-- Venue -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              <i class="fas fa-map-marker-alt mr-1"></i>Venue
+            </label>
+            <div class="relative">
+              {{ form.venue }}
+            </div>
+          </div>
+
+          <!-- Poster -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              <i class="fas fa-image mr-1"></i>Poster
+            </label>
+            {{ form.poster }}
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              <i class="fas fa-align-left mr-1"></i>Description
+            </label>
+            {{ form.description }}
+          </div>
+        </div>
+
+        <!-- Right column: Conductors and Guests -->
+        <div class="space-y-6">
+          <h3 class="text-xl font-semibold text-gray-700 border-b pb-2">Personnel</h3>
+
+          <!-- Conductors section -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+              <i class="fas fa-user-tie mr-1"></i>Conductors
+            </label>
+
+            <div class="grid grid-cols-2 gap-4 h-64">
+              <!-- Assigned Conductors -->
+              <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                <h4 class="font-medium text-green-800 mb-2 text-sm">
+                  <i class="fas fa-check-circle mr-1"></i>Assigned
+                </h4>
+                <div class="space-y-1 max-h-48 overflow-y-auto">
+                  <template x-for="conductor in assignedConductors" :key="conductor.id">
+                    <div class="flex items-center justify-between bg-white p-2 rounded border">
+                      <span class="text-sm" x-text="formattedName(conductor)"></span>
+                      <button type="button"
+                              @click="removeConductor(conductor.id)"
+                              class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </template>
+                  <div x-show="assignedConductors.length === 0" class="text-gray-500 text-sm italic">
+                    No conductors assigned
+                  </div>
+                </div>
+              </div>
+
+              <!-- Available Conductors -->
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <h4 class="font-medium text-blue-800 mb-2 text-sm">
+                  <i class="fas fa-search mr-1"></i>Available
+                </h4>
+                <input type="text"
+                       x-model="conductorSearch"
+                       placeholder="Search by last name..."
+                       class="w-full text-xs px-2 py-1 border rounded mb-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <div class="space-y-1 max-h-40 overflow-y-auto">
+                  <template x-for="conductor in filteredAvailableConductors" :key="conductor.id">
+                    <div class="bg-white p-2 rounded border cursor-pointer hover:bg-blue-100"
+                         @click="addConductor(conductor.id)">
+                      <span class="text-sm" x-text="formattedName(conductor)"></span>
+                    </div>
+                  </template>
+                  <div x-show="filteredAvailableConductors.length === 0" class="text-gray-500 text-sm italic">
+                    No conductors available
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guests section -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+              <i class="fas fa-user mr-1"></i>Guests
+            </label>
+
+            <div class="grid grid-cols-2 gap-4 h-64">
+              <!-- Assigned Guests -->
+              <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                <h4 class="font-medium text-green-800 mb-2 text-sm">
+                  <i class="fas fa-check-circle mr-1"></i>Assigned
+                </h4>
+                <div class="space-y-1 max-h-48 overflow-y-auto">
+                  <template x-for="guest in assignedGuests" :key="guest.id">
+                    <div class="flex items-center justify-between bg-white p-2 rounded border">
+                      <span class="text-sm" x-text="formattedName(guest)"></span>
+                      <button type="button"
+                              @click="removeGuest(guest.id)"
+                              class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </template>
+                  <div x-show="assignedGuests.length === 0" class="text-gray-500 text-sm italic">
+                    No guests assigned
+                  </div>
+                </div>
+              </div>
+
+              <!-- Available Guests -->
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <h4 class="font-medium text-blue-800 mb-2 text-sm">
+                  <i class="fas fa-list mr-1"></i>Available
+                </h4>
+                <input type="text"
+                       x-model="guestSearch"
+                       placeholder="Search by last name..."
+                       class="w-full text-xs px-2 py-1 border rounded mb-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <div class="space-y-1 max-h-40 overflow-y-auto">
+                  <template x-for="guest in filteredAvailableGuests" :key="guest.id">
+                    <div class="bg-white p-2 rounded border cursor-pointer hover:bg-blue-100"
+                         @click="addGuest(guest.id)">
+                      <span class="text-sm" x-text="formattedName(guest)"></span>
+                    </div>
+                  </template>
+                  <div x-show="filteredAvailableGuests.length === 0" class="text-gray-500 text-sm italic">
+                    No guests available
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="mb-4">
-        <label class="block font-semibold">Poster</label>
-        {% render_field form.poster class="input input-bordered w-full" %}
-      </div>
-      <div class="mb-4">
-        <label class="block font-semibold">Description</label>
-        {% render_field form.description class="input input-bordered w-full" %}
+      <!-- Program Section -->
+      <div class="mt-8">
+        <h3 class="text-xl font-bold text-gray-700 border-b pb-2 mb-4">
+          <i class="fas fa-list-ol mr-2"></i>Concert Program
+        </h3>
+        {{ program_formset.management_form }}
+        <div class="space-y-2">
+          {% for form in program_formset %}
+            <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded border">
+              <div class="flex-1">
+                {{ form.music }}
+              </div>
+              <div class="w=24">
+                {{ form.performance_order }}
+              </div>
+              {% if form.instance.pk %}
+                <div class="flex items-center">
+                  <label class="text-sm text-gray-600 mr-2">Delete:</label>
+                  {{ form.DELETE }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
       </div>
 
-
-      <button type="submit" class="btn btn-primary mt-6">
-        <i class="fa fa-save"></i> Save Concert
-      </button>
+      <!-- Submit Button -->
+      <div class="mt-8 flex justify-end">
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-200 flex items-center">
+          <i class="fas fa-save mr-2"></i>
+          {% if concert %}Update Concert{% else %}Create Concert{% endif %}
+        </button>
+      </div>
     </form>
   </div>
+  
+  <script>
+      // Wait for Alpine.js to be ready
+      document.addEventListener('alpine:init', () => {
+          Alpine.data('concertForm', (allConductors, allGuests, assignedConductors, assignedGuests) => {
+              console.log('=== DEBUGGING CONCERT FORM ===');
+              console.log('All conductors: ', allConductors);
+              console.log('All guests: ', allGuests);
+              console.log('Assigned conductors: ', assignedConductors);
+              console.log('Assigned guests: ', assignedGuests);
+              console.log('============================');
+
+              return {
+                  // Data
+                  allConductors: allConductors || [],
+                  allGuests: allGuests || [],
+                  assignedConductors: assignedConductors || [],
+                  assignedGuests: assignedGuests || [],
+                  conductorSearch: '',
+                  guestSearch: '',
+
+                  // Computed Properties
+                  get selectedConductors() {
+                      return this.assignedConductors.map(c => c.id);
+                  },
+
+                  get selectedGuests() {
+                      return this.assignedGuests.map(g => g.id);
+                  },
+
+                  get availableConductors() {
+                      const assignedIds = this.selectedConductors;
+                      return this.allConductors.filter(c => !assignedIds.includes(c.id));
+                  },
+
+                  get availableGuests() {
+                      const assignedIds = this.selectedGuests;
+                      return this.allGuests.filter(g => !assignedIds.includes(g.id));
+                  },
+
+                  get filteredAvailableConductors() {
+                      if (!this.conductorSearch) return this.availableConductors;
+                      const search = this.conductorSearch.toLowerCase();
+                      return this.availableConductors.filter(c =>
+                          (c.last_name || []).toLowerCase().includes(search)
+                      );
+                  },
+
+                  get filteredAvailableGuests() {
+                      if (!this.guestSearch) return this.availableGuests;
+                      const search = this.guestSearch.toLowerCase();
+                      return this.availableGuests.filter(g =>
+                          (g.last_name || []).toLowerCase().includes(search)
+                      );
+                  },
+
+                  // Methods
+                  formattedName(person) {
+                      if (!person) return 'Unknown';
+                      let name = '';
+
+                      // Handle title (can be null/None
+                      if (person.title && person.title !== null && person.title !== 'None') {
+                          name += person.title + ' ';
+                      }
+
+                      // Handle first_name (can be null/None)
+                      if (person.first_name && person.first_name !== null && person.first_name !== 'None') {
+                          name += person.first_name + ' ';
+                      }
+
+                      // Handle last name (should always exist, but be safe)
+                      if (person.last_name && person.last_name !== null && person.last_name !== 'None') {
+                          name += person.last_name + ' ';
+                      }
+                      return name.trim() || 'Unknown'; //fallback if all fields are empty
+                  },
+
+                  addConductor(conductorId) {
+                      const conductor = this.allConductors.find(c => c.id === conductorId);
+                      if (conductor && !this.selectedConductors.includes(conductorId)) {
+                          this.assignedConductors.push(conductor);
+                      }
+                  },
+
+                  removeConductor(conductorId) {
+                      this.assignedConductors = this.assignedConductors.filter(c => c.id !== conductorId);
+                  },
+
+                  addGuest(guestId) {
+                      const guest = this.allGuests.find(g => g.id === guestId);
+                      if (guest && !this.selectedGuests.includes(guestId)) {
+                          this.assignedGuests.push(guest);
+                      }
+                  },
+
+                  removeGuest(guestId) {
+                      this.assignedGuests = this.assignedGuests.filter(g => g.id !== guestId);
+                  },
+
+                  submitForm(event) {
+                      // The form will submit normally with the hidden inputs
+                      console.log('Submitting form with conductors: ', this.selectedConductors);
+                      console.log('Submitting form with guests: ', this.selectedGuests);
+                  }
+              }
+          });
+      });
+  </script>
 {% endblock %}

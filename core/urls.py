@@ -16,11 +16,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import debug_toolbar
 from django.contrib import admin
 from django.urls import path, include
 from common.views import HomePageView
 from django.conf.urls.static import static
 from django.conf import settings
+
 
 # Import the view we created in core/views.py
 
@@ -38,3 +40,6 @@ urlpatterns = [
 # Serve media files during development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [
+        path("__debug__/", include(debug_toolbar.urls)),
+    ]
