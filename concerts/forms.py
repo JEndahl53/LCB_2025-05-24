@@ -24,22 +24,27 @@ class VenueForm(forms.ModelForm):
 class ConcertForm(forms.ModelForm):
     class Meta:
         model = Concert
-        fields = ["title", "date", "time", "venue", "poster", "description"]
+        fields = ["title", "date", "venue", "poster", "description"]
         widgets = {
-            "date": forms.DateInput(attrs={"type": "datetime-local"}),
-            "time": forms.TimeInput(attrs={"type": "time"}),
-            "description": forms.Textarea(attrs={"rows": 4}),
+            "date": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "class": "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "class": "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Add CSS classes to form fields
         for field_name, field in self.fields.items():
-            if field_name == "description":
-                field.widget.attrs["class"] = (
-                    "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                )
-            else:
+            if field_name not in ["date", "description"]:
                 field.widget.attrs["class"] = (
                     "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 )

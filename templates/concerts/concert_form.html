@@ -11,14 +11,19 @@
   {{ all_guests|json_script:"all-guests" }}
   {{ assigned_conductors|json_script:"assigned-conductors" }}
   {{ assigned_guests|json_script:"assigned-guests" }}
+  {{ all_music|json_script:"all-music" }}
+  {{ selected_music|json_script:"selected-music" }}
 
   <div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-lg"
        x-data="concertForm(
           JSON.parse(document.getElementById('all-conductors').textContent),
           JSON.parse(document.getElementById('all-guests').textContent),
           JSON.parse(document.getElementById('assigned-conductors').textContent),
-          JSON.parse(document.getElementById('assigned-guests').textContent)
+          JSON.parse(document.getElementById('assigned-guests').textContent),
+          JSON.parse(document.getElementById('all-music').textContent),
+          JSON.parse(document.getElementById('selected-music').textContent)
        )">
+  
 
     <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
       <i class="fas fa-music text-blue-500 mr-3"></i>
@@ -28,12 +33,18 @@
     <form method="post" enctype="multipart/form-data" @submit="submitForm">
       {% csrf_token %}
 
-      <!-- Hidden inputs for conductors and guests -->
+      <!-- Hidden inputs for conductors, guests, and music -->
       <template x-for="conductorId in selectedConductors" :key="conductorId">
         <input type="hidden" name="conductors" :value="conductorId">
       </template>
       <template x-for="guestId in selectedGuests" :key="guestId">
         <input type="hidden" name="guests" :value="guestId">
+      </template>
+      <template x-for="(musicItem, index) in selectedMusicOrdered" :key="`music-${musicItem.id}-${index}`">
+        <div>
+          <input type="hidden" name="music" :value="musicItem.id">
+          <input type="hidden" name="music_order" :value="index + 1">
+        </div>
       </template>
 
       <!-- Show errors for the main form -->
@@ -59,19 +70,12 @@
           </div>
 
           <!-- Date and time -->
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                <i class="fas fa-calendar mr-1"></i>Date
-              </label>
-              {{ form.date }}
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                <i class="fas fa-clock mr-1"></i>Time
-              </label>
-              {{ form.time }}
-            </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              <i class="fas fa-calendar mr-1"></i>Date & Time
+            </label>
+            {{ form.date }}
+            <p class="text-xs text-gray-500 mt-1">Select a date and time for the concert.</p>
           </div>
 
           <!-- Venue -->
@@ -218,24 +222,76 @@
         <h3 class="text-xl font-bold text-gray-700 border-b pb-2 mb-4">
           <i class="fas fa-list-ol mr-2"></i>Concert Program
         </h3>
-        {{ program_formset.management_form }}
-        <div class="space-y-2">
-          {% for form in program_formset %}
-            <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded border">
-              <div class="flex-1">
-                {{ form.music }}
-              </div>
-              <div class="w=24">
-                {{ form.performance_order }}
-              </div>
-              {% if form.instance.pk %}
-                <div class="flex items-center">
-                  <label class="text-sm text-gray-600 mr-2">Delete:</label>
-                  {{ form.DELETE }}
-                </div>
-              {% endif %}
+
+        <!-- Selected Music (Drag-and-Drop Program) -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-3">
+            <i class="fas fa-music mr-1"></i>Program Order
+            <span class="text-xs text-gray-500">(Drag to reorder)</span>
+          </label>
+
+          <div class="bg-green-50 border border-green-200 rounded-lg p-4 min-h-[200px]">
+            <div x-show="selectedMusicOrdered.length === 0" class="text-gray-500 text-center py-8 italic">
+              No music selected for this program.<br>
+              <span class="text-xs">Add music from the search below.</span>
             </div>
-          {% endfor %}
+
+            <div x-show="selectedMusicOrdered.length > 0"
+                 class="space-y-2"
+                 x-ref="sortableContainer">
+              <template x-for="(musicItem, index) in selectedMusicOrdered" :key="`selected-${musicItem.id}-${index}`">
+                <div
+                    class="flex items-center bg-white p-3 rounded border cursor-move hover:shadow-md transition-shadow sortable-item"
+                    :data-music-id="musicItem.id">
+                  <div class="flex items-center mr-3 text-gray-400">
+                    <i class="fas fa-grip-vertical"></i>
+                  </div>
+                  <div
+                      class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                    <span x-text="index + 1"></span>
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-medium text-gray-900" x-text="musicItem.title"></div>
+                    <div class="text-sm text-gray-600" x-text="formatMusicDetails(musicItem)"></div>
+                  </div>
+                  <button type="button"
+                          @click="removeMusic(musicItem.id)"
+                          class="text-red-500 hover:text-red-700 ml-3">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- Available Music with Search -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-3">
+            <i class="fas fa-search mr-1"></i>Add Music to Program
+          </label>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <input type="text"
+                   x-model="musicSearch"
+                   placeholder="Search by title, composer, or arranger..."
+                   class="w-full px-3 py-2 border rounded-md mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+            <div class="max-h-64 overflow-y-auto space-y-2">
+              <template x-for="music in filteredAvailableMusic" :key="`available-${music.id}`">
+                <div class="bg-white p-3 rounded border cursor-pointer hover:bg-blue-100 transition-colors"
+                     @click="addMusic(music.id)">
+                  <div class="font-medium text-gray-900" x-text="music.title"></div>
+                  <div class="text-sm text-gray-600" x-text="formatMusicDetails(music)"></div>
+                </div>
+              </template>
+
+              <div x-show="filteredAvailableMusic.length === 0" class="text-gray-500 text-center py-4 italic">
+                <span x-show="musicSearch === ''">All available music pieces</span>
+                <span x-show="musicSearch !== ''">No music matches your search</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -249,16 +305,21 @@
       </div>
     </form>
   </div>
-  
+
+  <!-- Include Sortable.js for drag-and-drop -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
   <script>
       // Wait for Alpine.js to be ready
       document.addEventListener('alpine:init', () => {
-          Alpine.data('concertForm', (allConductors, allGuests, assignedConductors, assignedGuests) => {
+          Alpine.data('concertForm', (allConductors, allGuests, assignedConductors, assignedGuests, allMusic, selectedMusic) => {
               console.log('=== DEBUGGING CONCERT FORM ===');
               console.log('All conductors: ', allConductors);
               console.log('All guests: ', allGuests);
               console.log('Assigned conductors: ', assignedConductors);
               console.log('Assigned guests: ', assignedGuests);
+              console.log('All music: ', allMusic);
+              console.log('Selected music: ', selectedMusic);
               console.log('============================');
 
               return {
@@ -267,8 +328,55 @@
                   allGuests: allGuests || [],
                   assignedConductors: assignedConductors || [],
                   assignedGuests: assignedGuests || [],
+                  allMusic: allMusic || [],
+                  selectedMusicOrdered: selectedMusic || [],
                   conductorSearch: '',
                   guestSearch: '',
+                  musicSearch: '',
+                  sortableInstance: null,
+
+                  // Initialize sortable functionality
+                  init() {
+                      this.$nextTick(() => {
+                          this.initSortable();
+                      });
+                  },
+
+                  initSortable() {
+                      const sortableContainer = this.$refs.sortableContainer;
+                      if (sortableContainer && !this.sortableInstance) {
+                          this.sortableInstance = new Sortable(sortableContainer, {
+                              animation: 150,
+                              ghostClass: 'opacity-50',
+                              chosenClass: 'bg-blue-100',
+                              dragClass: 'opacity-75',
+                              handle: '.fas.fa-grip-vertical', // Only allow dragging by the grip icon
+                              onStart: (evt) => {
+                                  console.log('Drag started', evt.oldIndex);
+                              },
+                              onEnd: (evt) => {
+                                  console.log('Drag ended', evt.oldIndex, '->', evt.newIndex);
+
+                                  // Only proceed if the position actually changed
+                                  if (evt.oldIndex !== evt.newIndex) {
+                                      // Move item in array
+                                      const item = this.selectedMusicOrdered.splice(evt.oldIndex, 1)[0];
+                                      this.selectedMusicOrdered.splice(evt.newIndex, 0, item);
+
+                                      // Force Alpine.js to re-render by triggering reactivity
+                                      this.$nextTick(() => {
+                                          // Refresh the sortable instance to match the new DOM
+                                          if (this.sortableInstance) {
+                                              this.sortableInstance.destroy();
+                                              this.sortableInstance = null;
+                                              this.initSortable();
+                                          }
+                                      });
+                                  }
+                              }
+                          });
+                      }
+                  },
 
                   // Computed Properties
                   get selectedConductors() {
@@ -277,6 +385,10 @@
 
                   get selectedGuests() {
                       return this.assignedGuests.map(g => g.id);
+                  },
+
+                  get selectedMusicIds() {
+                      return this.selectedMusicOrdered.map(m => m.id);
                   },
 
                   get availableConductors() {
@@ -289,11 +401,16 @@
                       return this.allGuests.filter(g => !assignedIds.includes(g.id));
                   },
 
+                  get availableMusic() {
+                      const selectedIds = this.selectedMusicIds;
+                      return this.allMusic.filter(m => !selectedIds.includes(m.id));
+                  },
+
                   get filteredAvailableConductors() {
                       if (!this.conductorSearch) return this.availableConductors;
                       const search = this.conductorSearch.toLowerCase();
                       return this.availableConductors.filter(c =>
-                          (c.last_name || []).toLowerCase().includes(search)
+                          (c.last_name || '').toLowerCase().includes(search)
                       );
                   },
 
@@ -301,8 +418,36 @@
                       if (!this.guestSearch) return this.availableGuests;
                       const search = this.guestSearch.toLowerCase();
                       return this.availableGuests.filter(g =>
-                          (g.last_name || []).toLowerCase().includes(search)
+                          (g.last_name || '').toLowerCase().includes(search)
                       );
+                  },
+
+                  get filteredAvailableMusic() {
+                      console.log('Filtering music with search term:', this.musicSearch);
+                      console.log('Available music count:', this.availableMusic.length);
+
+                      if (!this.musicSearch) {
+                          console.log('No search term, returning all available music');
+                          return this.availableMusic;
+                      }
+
+                      const search = this.musicSearch.toLowerCase();
+                      return this.availableMusic.filter(music => {
+                          // Search in title
+                          if (music.title.toLowerCase().includes(search)) return true;
+
+                          // Search in composers
+                          if (music.composers && music.composers.some(composer =>
+                              `${composer.first_name} ${composer.last_name}`.toLowerCase().includes(search)
+                          )) return true;
+
+                          // Search in arrangers
+                          if (music.arrangers && music.arrangers.some(arranger =>
+                              `${arranger.first_name} ${arranger.last_name}`.toLowerCase().includes(search)
+                          )) return true;
+
+                          return false;
+                      });
                   },
 
                   // Methods
@@ -310,22 +455,12 @@
                       if (!person) return 'Unknown';
                       let name = '';
 
-                      // Handle title (can be null/None
-                      if (person.title && person.title !== null && person.title !== 'None') {
-                          name += person.title + ' ';
-                      }
-
-                      // Handle first_name (can be null/None)
-                      if (person.first_name && person.first_name !== null && person.first_name !== 'None') {
-                          name += person.first_name + ' ';
-                      }
-
-                      // Handle last name (should always exist, but be safe)
-                      if (person.last_name && person.last_name !== null && person.last_name !== 'None') {
-                          name += person.last_name + ' ';
-                      }
-                      return name.trim() || 'Unknown'; //fallback if all fields are empty
+                      if (person.title) name += person.title + ' ';
+                      if (person.first_name) name += person.first_name + ' ';
+                      if (person.last_name) name += person.last_name + ' ';
+                      return name.trim();
                   },
+
 
                   addConductor(conductorId) {
                       const conductor = this.allConductors.find(c => c.id === conductorId);
@@ -349,10 +484,58 @@
                       this.assignedGuests = this.assignedGuests.filter(g => g.id !== guestId);
                   },
 
+                  addMusic(musicId) {
+                      const music = this.allMusic.find(m => m.id === musicId);
+                      if (music) {
+                          this.selectedMusicOrdered.push(music);
+                          // Reinitialize sortable after adding new item
+                          this.$nextTick(() => {
+                              if (this.sortableInstance) {
+                                  this.sortableInstance.destroy();
+                                  this.sortableInstance = null;
+                                  this.initSortable();
+                              }
+                          });
+                      }
+                  },
+
+                  removeMusic(musicId) {
+                      this.selectedMusicOrdered = this.selectedMusicOrdered.filter(m => m.id !== musicId);
+                      // Reinitialize sortable after removing item
+                      this.$nextTick(() => {
+                          if (this.sortableInstance) {
+                              this.sortableInstance.destroy();
+                              this.sortableInstance = null;
+                              this.initSortable();
+                          }
+                      });
+                  },
+
+                  formatMusicDetails(music) {
+                      let details = [];
+
+                      // Handle composers - check both 'composer' and 'composers' fields
+                      if (music.composers && music.composers.length > 0) {
+                          const composerNames = music.composers.map(c => `${c.first_name} ${c.last_name}`);
+                          details.push(`Composed by: ${composerNames.join(', ')}`);
+                      }
+
+                      // Handle arrangers - check both 'arranger' and 'arrangers' fields
+                      if (music.arrangers && music.arrangers.length > 0) {
+                          const arrangerNames = music.arrangers.map(a => `${a.first_name} ${a.last_name}`);
+                          details.push(`Arranged by: ${arrangerNames.join(', ')}`);
+                      }
+
+                      // Add other details
+                      if (music.difficulty) details.push(`Difficulty: ${music.difficulty}`);
+                      if (music.duration) details.push(`Duration: ${music.duration}`);
+
+                      return details.join(' • ');
+                  },
+
+
                   submitForm(event) {
-                      // The form will submit normally with the hidden inputs
-                      console.log('Submitting form with conductors: ', this.selectedConductors);
-                      console.log('Submitting form with guests: ', this.selectedGuests);
+                      console.log('Submitting form with music order:', this.selectedMusicOrdered.map(m => m.id));
                   }
               }
           });

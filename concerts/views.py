@@ -11,8 +11,10 @@ from django.views.generic import (
 )
 from .forms import ConcertForm, ConductorForm, GuestForm, VenueForm, ConcertProgramForm
 from .models import Concert, Conductor, Guest, Venue, ConcertProgram
+from library.models import Music  # Import Music model
 from django.urls import reverse_lazy
-from django.forms import inlineformset_factory
+
+# from django.forms import inlineformset_factory
 
 
 class ManageConcertsView(LoginRequiredMixin, TemplateView):
@@ -197,10 +199,68 @@ class ConcertDetailView(DetailView):
     def get_queryset(self):
         return Concert.objects.all()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-ConcertProgramFormSet = inlineformset_factory(
-    Concert, ConcertProgram, form=ConcertProgramForm, extra=3, can_delete=True
-)
+        # Get the concert program items in the correct order with related music, composers, and arrangers
+        program_items = (
+            ConcertProgram.objects.filter(concert=self.object)
+            .select_related("music")
+            .prefetch_related("music__composer", "music__arranger")
+            .order_by("performance_order")
+        )
+        context["program_items"] = program_items
+        return context
+
+
+# ConcertProgramFormSet = inlineformset_factory(
+#     Concert, ConcertProgram, form=ConcertProgramForm, extra=3, can_delete=True
+# )
+
+
+def serialize_music_for_json(music_queryset):
+    """
+    Helper function to serialize music data with related composers and arrangers
+    for JSON output in templates.
+    """
+    music_data = []
+    for music in music_queryset:
+        # Get composers data
+        composers = []
+        for composer in music.composer.all():
+            composers.append(
+                {
+                    "id": composer.id,
+                    "first_name": composer.first_name,
+                    "last_name": composer.last_name,
+                }
+            )
+
+        # Get arrangers data
+        arrangers = []
+        for arranger in music.arranger.all():
+            arrangers.append(
+                {
+                    "id": arranger.id,
+                    "first_name": arranger.first_name,
+                    "last_name": arranger.last_name,
+                }
+            )
+
+        music_data.append(
+            {
+                "id": music.id,
+                "title": music.title,
+                "composers": composers,
+                "arrangers": arrangers,
+                "difficulty": music.difficulty,
+                "status": music.status,
+                "year_published": music.year_published,
+                "duration": str(music.duration) if music.duration else None,
+            }
+        )
+
+    return music_data
 
 
 class ConcertCreateView(LoginRequiredMixin, CreateView):
@@ -232,20 +292,27 @@ class ConcertCreateView(LoginRequiredMixin, CreateView):
         data["assigned_conductors"] = []  # Empty for new concerts
         data["assigned_guests"] = []  # Empty for new concerts
 
-        if self.request.POST:
-            data["program_formset"] = ConcertProgramFormSet(
-                self.request.POST, self.request.FILES
-            )
-        else:
-            data["program_formset"] = ConcertProgramFormSet()
+        # Get all music with related data for the music selection interface
+        all_music_queryset = Music.objects.prefetch_related(
+            "composer", "arranger"
+        ).order_by("title")
+        data["all_music"] = serialize_music_for_json(all_music_queryset)
+        data["selected_music"] = []  # Empty for new concerts
+
+        # if self.request.POST:
+        #     data["program_formset"] = ConcertProgramFormSet(
+        #         self.request.POST, self.request.FILES
+        #     )
+        # else:
+        #     data["program_formset"] = ConcertProgramFormSet()
         return data
 
     def form_valid(self, form):
-        context = self.get_context_data()
-        program_formset = context["program_formset"]
+        # context = self.get_context_data()
+        # program_formset = context["program_formset"]
 
         with transaction.atomic():
-            if form.is_valid() and program_formset.is_valid():
+            if form.is_valid():
                 self.object = form.save()
 
                 # Handle conductors
@@ -260,10 +327,37 @@ class ConcertCreateView(LoginRequiredMixin, CreateView):
                     guests = Guest.objects.filter(id__in=guest_ids)
                     self.object.guest.set(guests)
 
-                program_formset.instance = self.object
-                program_formset.save()
+                # Handle music and music order
+                music_ids = self.request.POST.getlist("music")
+                music_orders = self.request.POST.getlist("music_order")
+
+                print(f"DEBUG - Music IDs received: {music_ids}")
+                print(f"DEBUG - Music Orders received: {music_orders}")
+
+                if music_ids:
+                    # Clear existing program entries
+                    # ConcertProgram.objects.filter(concert=self.object).delete()
+
+                    # Create new program entries with proper ordering
+                    for music_id, order in zip(music_ids, music_orders):
+                        try:
+                            music = Music.objects.get(id=music_id)
+                            program_item = ConcertProgram.objects.create(
+                                concert=self.object,
+                                music=music,
+                                performance_order=int(order),
+                            )
+                            print(f"DEBUG - Created program entry: {program_item}")
+                        except (Music.DoesNotExist, ValueError) as e:
+                            print(f"DEBUG - Error creating program entry: {e}")
+                            continue
+
+                # NOTE: We're handling music separately, so we skip the program_formset.save()
+                # program_formset.instance = self.object
+                # program_formset.save()
                 return super().form_valid(form)
             else:
+                print(f"DEBUG - Form validation failed. Form errors: {form.errors}")
                 return self.form_invalid(form)
 
 
@@ -302,20 +396,36 @@ class ConcertUpdateView(LoginRequiredMixin, UpdateView):
             self.object.guest.values("id", "first_name", "last_name")
         )
 
-        if self.request.POST:
-            data["program_formset"] = ConcertProgramFormSet(
-                self.request.POST, self.request.FILES, instance=self.object
-            )
-        else:
-            data["program_formset"] = ConcertProgramFormSet(instance=self.object)
+        # Get all music with related data for the music selection interface
+        all_music_queryset = Music.objects.prefetch_related(
+            "composer", "arranger"
+        ).order_by("title")
+        data["all_music"] = serialize_music_for_json(all_music_queryset)
+
+        # Get currently selected music in the correct order
+        existing_program = (
+            ConcertProgram.objects.filter(concert=self.object)
+            .select_related("music")
+            .prefetch_related("music__composer", "music__arranger")
+            .order_by("performance_order")
+        )
+        selected_music_queryset = [program.music for program in existing_program]
+        data["selected_music"] = serialize_music_for_json(selected_music_queryset)
+
+        # if self.request.POST:
+        #     data["program_formset"] = ConcertProgramFormSet(
+        #         self.request.POST, self.request.FILES, instance=self.object
+        #     )
+        # else:
+        #     data["program_formset"] = ConcertProgramFormSet(instance=self.object)
         return data
 
     def form_valid(self, form):
-        context = self.get_context_data()
-        program_formset = context["program_formset"]
+        # context = self.get_context_data()
+        # program_formset = context["program_formset"]
 
         with transaction.atomic():
-            if form.is_valid() and program_formset.is_valid():
+            if form.is_valid():
                 self.object = form.save()
 
                 # Handle conductors
@@ -332,10 +442,42 @@ class ConcertUpdateView(LoginRequiredMixin, UpdateView):
                 guests = Guest.objects.filter(id__in=guest_ids) if guest_ids else []
                 self.object.guest.set(guests)
 
-                program_formset.instance = self.object
-                program_formset.save()
+                # Handle music and music order
+                music_ids = self.request.POST.getlist("music")
+                music_orders = self.request.POST.getlist("music_order")
+
+                print(f"DEBUG - Music IDs received: {music_ids}")
+                print(f"DEBUG - Music Orders received: {music_orders}")
+
+                if music_ids:
+                    # Clear existing program entries
+                    ConcertProgram.objects.filter(concert=self.object).delete()
+
+                    # Create new program entries with proper ordering
+                    for music_id, order in zip(music_ids, music_orders):
+                        try:
+                            music = Music.objects.get(id=music_id)
+                            program_item = ConcertProgram.objects.create(
+                                concert=self.object,
+                                music=music,
+                                performance_order=int(order),
+                            )
+                            print(f"DEBUG - Created program item: {program_item}")
+                        except (Music.DoesNotExist, ValueError) as e:
+                            print(f"DEBUG - Error creating program item: {e}")
+                            continue
+                else:
+                    print(f"DEBUG - No music IDs received, clearing all program items.")
+                    # If no music is selected, clear all existing program entries
+                    ConcertProgram.objects.filter(concert=self.object).delete()
+
+                # NOTE: We're handling music separately, so we can skip these next steps
+                # program_formset.instance = self.object
+                # program_formset.save()
+
                 return super().form_valid(form)
             else:
+                print(f"DEBUG - Form validation failed. Form errors: {form.errors}")
                 return self.form_invalid(form)
 
     def get_queryset(self):

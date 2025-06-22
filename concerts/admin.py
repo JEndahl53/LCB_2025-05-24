@@ -23,7 +23,7 @@ class ConcertAdmin(admin.ModelAdmin):
     """
 
     inlines = [ConcertProgramInline]
-    list_display = ("title", "date", "time", "venue")
+    list_display = ("title", "date", "venue")
     search_fields = ("title",)
     ordering = ("date",)
     list_per_page = 20

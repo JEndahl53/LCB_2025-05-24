@@ -151,7 +151,6 @@ class Concert(models.Model):
 
     title = models.CharField(max_length=200)
     date = models.DateTimeField(blank=True, null=True)
-    time = models.TimeField(blank=True, null=True)
     venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null=True)
     conductor = models.ManyToManyField(Conductor, blank=True)
     guest = models.ManyToManyField(Guest, blank=True)
