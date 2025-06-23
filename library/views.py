@@ -34,6 +34,8 @@ from .models import (
 from django.urls import reverse_lazy
 from django.views.generic.edit import ModelFormMixin
 from .filters import MusicFilter
+from django.db.models import Case, When, Value, CharField, Min
+from django.db.models.functions import Concat, Lower
 
 # for javascript searches
 from django.http import JsonResponse
@@ -422,17 +424,108 @@ class MusicListView(FilterView):
 
     def get_queryset(self):
         # Optimize queries with select_related and prefetch_related
-        return (
-            Music.objects.select_related("publisher")
-            .prefetch_related("composer", "arranger", "genre")
-            .order_by("title")
+        queryset = Music.objects.select_related("publisher").prefetch_related(
+            "composer", "arranger", "genre"
         )
+
+        # Handle sorting
+        sort_by = self.request.GET.get("sort", "title")
+        sort_order = self.request.GET.get("order", "asc")
+
+        # Handle ManyToMany field sorting differently
+        if sort_by == "composer":
+            # Annotate with the "first" composer (alphabetically by last name)
+            queryset = queryset.annotate(
+                first_composer_name=Min(
+                    Concat(
+                        "composer__last_name",
+                        Value(", "),
+                        "composer__first_name",
+                        output_field=CharField(),
+                    )
+                )
+            )
+            if sort_order == "desc":
+                queryset = queryset.order_by("-first_composer_name", "title")
+            else:
+                queryset = queryset.order_by("first_composer_name", "title")
+
+        elif sort_by == "arranger":
+            # Annotate with the "first" arranger (alphabetically by last name)
+            queryset = queryset.annotate(
+                first_arranger_name=Min(
+                    Concat(
+                        "arranger__last_name",
+                        Value(", "),
+                        "arranger__first_name",
+                        output_field=CharField(),
+                    )
+                )
+            )
+            if sort_order == "desc":
+                queryset = queryset.order_by("-first_arranger_name", "title")
+            else:
+                queryset = queryset.order_by("first_arranger_name", "title")
+
+        elif sort_by == "genre":
+            # Annotate with the "first" genre (alphabetically)
+            queryset = queryset.annotate(first_genre_name=Min("genre__name"))
+            if sort_order == "desc":
+                queryset = queryset.order_by("-first_genre_name", "title")
+            else:
+                queryset = queryset.order_by("first_genre_name", "title")
+
+        else:
+            # Handle non-M2M fields with the original approach
+
+            # Define sortable fields mapping
+            sort_fields = {
+                "location": ["location_drawer", "location_number"],
+                "title": ["title"],
+                "difficulty": ["difficulty"],
+                "duration": ["duration"],
+                "status": ["status"],
+                "score": ["score_missing"],
+            }
+
+            if sort_by in sort_fields:
+                order_fields = sort_fields[sort_by]
+                if sort_order == "desc":
+                    order_fields = [f"-{field}" for field in order_fields]
+                queryset = queryset.order_by(*order_fields, "title")
+            else:
+                queryset = queryset.order_by("title")
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Add total count for display
-        context["total_count"] = self.get_queryset().count()
+        # Add total count for display (use base queryset without sorting annotations)
+        base_queryset = Music.objects.select_related("publisher").prefetch_related(
+            "composer", "arranger", "genre"
+        )
+        context["total_count"] = base_queryset.count()
         context["filtered_count"] = context["object_list"].count()
+
+        # Add sorting context
+        context["current_sort"] = self.request.GET.get("sort", "title")
+        context["current_order"] = self.request.GET.get("order", "asc")
+
+        # Create sort display names
+        sort_display_names = {
+            "location": "Location",
+            "title": "Title",
+            "composer": "Composer",
+            "arranger": "Arranger",
+            "genre": "Genre",
+            "difficulty": "Difficulty",
+            "duration": "Duration",
+            "status": "Status",
+            "score": "Score Status",
+        }
+        context["current_sort_display"] = sort_display_names.get(
+            context["current_sort"], "Title"
+        )
         return context
 
 

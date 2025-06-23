@@ -23,7 +23,7 @@ class Composer(models.Model):
         return f"{self.first_name} {self.last_name}"
 
     def get_sort_name(self):
-        if not {self.first_name}:
+        if not self.first_name:
             return f"{self.last_name}"
         return f"{self.last_name}, {self.first_name}"
 
@@ -173,7 +173,6 @@ class RentingOrganization(models.Model):
 class Music(models.Model):
 
     DIFFICULTY_CHOICES = [
-        ("", "--------"),
         ("E", "Easy"),
         ("ME", "Moderately Easy"),
         ("M", "Moderate"),
@@ -181,7 +180,6 @@ class Music(models.Model):
         ("D", "Difficult"),
     ]
     STATUS_CHOICES = [
-        ("", "-------"),
         ("O", "Owned"),
         ("L", "Loaned To"),
         ("R", "Rented"),
@@ -245,6 +243,16 @@ class Music(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_duration_display(self):
+        """Return duration in MM:SS format"""
+        if not self.duration:
+            return "-"
+
+        total_seconds = int(self.duration.total_seconds())
+        minutes = total_seconds // 60
+        seconds = total_seconds % 60
+        return f"{minutes:02d}:{seconds:02d}"
 
     class Meta:
         verbose_name = "Music"

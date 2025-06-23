@@ -5,12 +5,26 @@
 {% block title %}Music Library{% endblock %}
 
 {% block content %}
-  <div class="container mx-auto px-4 py-8">
+  <div class="container mx-auto px-4 py-8" x-data="musicListSorter()">
+    <!-- Debug info (remove this once working) -->
+    <div class="bg-yellow-100 p-2 mb-4 text-xs">
+      <strong>Debug:</strong>
+      Current Sort: <span x-text="currentSort"></span> |
+      Current Order: <span x-text="currentOrder"></span> |
+      URL Params: {{ request.GET.urlencode }}
+    </div>
+
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Music Library</h1>
-      <p class="text-gray-600">
-        Showing {{ filtered_count }} of {{ total_count }} pieces
-      </p>
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Music Library</h1>
+        <p class="text-gray-600">
+          Showing {{ filtered_count }} of {{ total_count }} pieces
+          <span x-show="currentSort" class="text-sm">
+            • Sorted by <span x-text="getSortDisplayName()"></span>
+            <i :class="currentOrder === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'" class="text-xs"></i>
+          </span>
+        </p>
+      </div>
       {% if user.is_authenticated %}
         <a href="{% url 'music_create' %}"
            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition flex items-center">
@@ -22,6 +36,17 @@
     <!-- Filter Bar -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-6">
       <form method="get" id="filter-form" class="space-y-4">
+        <!-- Hidden fields for sorting -->
+        <input type="hidden" name="sort" x-model="currentSort">
+        <input type="hidden" name="order" x-model="currentOrder">
+
+        <!-- Preserve all existing filter parameters -->
+        {% for key, value in request.GET.items %}
+          {% if key != 'sort' and key != 'order' %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+          {% endif %}
+        {% endfor %}
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Live Search -->
           <div class="lg:col-span-2">
@@ -46,28 +71,37 @@
             </label>
             {{ filter.form.status }}
           </div>
-        </div>
 
-        <!-- Genre Filter -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Genres
-          </label>
-          <div class="relative">
-            <button type="button" id="genre-dropdown-btn"
-                    class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
-              <span id="genre-selection-text">Select genres...</span>
-              <i class="fas fa-chevron-down float-right mt-1"></i>
-            </button>
-            <div id="genre-dropdown"
-                 class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-              <div class="p-2">
-                {% for choice in filter.form.genre %}
-                  <label class="flex items-center py-2 px-3 hover:bg-gray-50 rounded cursor-pointer">
-                    {{ choice.tag }}
-                    <span class="ml-2">{{ choice.choice_label }}</span>
-                  </label>
-                {% endfor %}
+          <!-- Score Missing Filter -->
+          <div>
+            <label for="{{ filter.form.score_missing.id_for_label }}"
+                   class="block text-sm font-medium text-gray-700 mb-2">
+              Score Status
+            </label>
+            {{ filter.form.score_missing }}
+          </div>
+
+          <!-- Genre Filter -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Genres
+            </label>
+            <div class="relative">
+              <button type="button" id="genre-dropdown-btn"
+                      class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+                <span id="genre-selection-text">Select genres...</span>
+                <i class="fas fa-chevron-down float-right mt-1"></i>
+              </button>
+              <div id="genre-dropdown"
+                   class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                <div class="p-2">
+                  {% for choice in filter.form.genre %}
+                    <label class="flex items-center py-2 px-3 hover:bg-gray-50 rounded cursor-pointer">
+                      {{ choice.tag }}
+                      <span class="ml-2">{{ choice.choice_label }}</span>
+                    </label>
+                  {% endfor %}
+                </div>
               </div>
             </div>
           </div>
@@ -95,22 +129,76 @@
             <thead class="bg-gray-50">
             <tr>
               <th class="w-20 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Location
+                <div class="flex items-center">
+                  Location
+                  <button @click="sort('location')" class="ml-1 text-gray-400 hover:text-gray-600">
+                    <i :class="getSortIcon('location')" class="text-xs"></i>
+                  </button>
+                </div>
               </th>
               <th class="w-64 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
+                <div class="flex items-center">
+                  Title
+                  <button @click="sort('title')" class="ml-1 text-gray-400 hover:text-gray-600">
+                    <i :class="getSortIcon('title')" class="text-xs"></i>
+                  </button>
+                </div>
               </th>
               <th class="w-48 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Composers
+                <div class="flex items-center">
+                  Composers
+                  <button @click="sort('composer')" class="ml-1 text-gray-400 hover:text-gray-600">
+                    <i :class="getSortIcon('composer')" class="text-xs"></i>
+                  </button>
+                </div>
               </th>
               <th class="w-48 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Arrangers
+                <div class="flex items-center">
+                  Arrangers
+                  <button @click="sort('arranger')" class="ml-1 text-gray-400 hover:text-gray-600">
+                    <i :class="getSortIcon('arranger')" class="text-xs"></i>
+                  </button>
+                </div>
+              </th>
+              <th class="w-48 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div class="flex items-center">
+                  Genres
+                  <button @click="sort('genre')" class="ml-1 text-gray-400 hover:text-gray-600">
+                    <i :class="getSortIcon('genre')" class="text-xs"></i>
+                  </button>
+                </div>
               </th>
               <th class="w-24 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Difficulty
+                <div class="flex items-center">
+                  Difficulty
+                  <button @click="sort('difficulty')" class="ml-1 text-gray-400 hover:text-gray-600">
+                    <i :class="getSortIcon('difficulty')" class="text-xs"></i>
+                  </button>
+                </div>
               </th>
               <th class="w-20 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
+                <div class="flex items-center">
+                  Duration
+                  <button @click="sort('duration')" class="ml-1 text-gray-400 hover:text-gray-600">
+                    <i :class="getSortIcon('duration')" class="text-xs"></i>
+                  </button>
+                </div>
+              </th>
+              <th class="w-20 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div class="flex items-center">
+                  Status
+                  <button @click="sort('status')" class="ml-1 text-gray-400 hover:text-gray-600">
+                    <i :class="getSortIcon('status')" class="text-xs"></i>
+                  </button>
+                </div>
+              </th>
+              <th class="w-20 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div class="flex items-center">
+                  Score
+                  <button @click="sort('score')" class="ml-1 text-gray-400 hover:text-gray-600">
+                    <i :class="getSortIcon('score')" class="text-xs"></i>
+                  </button>
+                </div>
               </th>
               <th class="w-20 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -158,6 +246,15 @@
                     {% endfor %}
                   </div>
                 </td>
+                <td class="px-3 py-4">
+                  <div class="text-sm text-gray-900 break-words">
+                    {% for genre in music.genre.all %}
+                      {{ genre.name }}{% if not forloop.last %}; {% endif %}
+                    {% empty %}
+                      -
+                    {% endfor %}
+                  </div>
+                </td>
                 <td class="px-3 py-4 whitespace-nowrap">
                   {% if music.difficulty %}
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
@@ -174,6 +271,11 @@
                   {% endif %}
                 </td>
                 <td class="px-3 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">
+                    {{ music.get_duration_display }}
+                  </div>
+                </td>
+                <td class="px-3 py-4 whitespace-nowrap">
                   {% if music.status %}
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                               {% if music.status == 'O' %}bg-green-100 text-green-800
@@ -188,16 +290,66 @@
                     -
                   {% endif %}
                 </td>
+                <td class="px-3 py-4 whitespace-nowrap">
+                  {% if music.score_missing %}
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                      <i class="fas fa-exclamation-triangle mr-1"></i>
+                    </span>
+                  {% else %}
+                    <span
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      <i class="fas fa-check mr-1"></i>
+                    </span>
+                  {% endif %}
+                </td>
                 <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <a href="{% url 'music_detail' music.pk %}"
-                     class="text-blue-600 hover:text-blue-900 mr-3">
-                    <i class="fas fa-eye"></i>
-                  </a>
-                  {% if user.is_authenticated %} <!-- show edit only if logged in -->
-                    <a href="{% url 'music_update' music.pk %}"
-                       class="text-green-600 hover:text-green-900">
-                      <i class="fas fa-edit"></i>
+                  <!-- View Details with Tooltip -->
+                  <div class="inline-block relative" x-data="{ showTooltip: false }">
+                    <a href="{% url 'music_detail' music.pk %}"
+                       class="text-blue-600 hover:text-blue-900 mr-3"
+                       @mouseenter="showTooltip = true"
+                       @mouseleave="showTooltip = false">
+
+                      <i class="fas fa-eye"></i>
                     </a>
+                    <div x-show="showTooltip"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95"
+                         x-transition:enter-end="opacity-100 transform scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95"
+                         class="absolute z-50 px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-lg whitespace-nowrap -top-8 left-1/2 transform -translate-x-1/2"
+                         style="display: none;">
+                      View Details
+                      <div
+                          class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-transparent border-t-gray-900"></div>
+                    </div>
+                  </div>
+
+                  <!-- Edit Piece -->
+                  {% if user.is_authenticated %} <!-- show edit only if logged in -->
+                    <div class="inline-block relative" x-data="{ showTooltip: false }">
+                      <a href="{% url 'music_update' music.pk %}"
+                         class="text-green-600 hover:text-green-900 mr-3"
+                         @mouseenter="showTooltip = true"
+                         @mouseleave="showTooltip = false">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <div x-show="showTooltip"
+                           x-transition:enter="transition ease-out duration-200"
+                           x-transition:enter-start="opacity-0 transform scale-95"
+                           x-transition:enter-end="opacity-100 transform scale-100"
+                           x-transition:leave="transition ease-in duration-75"
+                           x-transition:leave-start="opacity-100 transform scale-100"
+                           x-transition:leave-end="opacity-0 transform scale-95"
+                           class="absolute z-50 px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-lg whitespace-nowrap -top-8 left-1/2 transform -translate-x-1/2"
+                           style="display: none;">
+                        Edit Piece
+                        <div
+                            class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-transparent border-t-gray-900"></div>
+                      </div>
+                    </div>
                   {% endif %}
                 </td>
               </tr>
@@ -219,6 +371,59 @@
     </div>
   </div>
 
+  <!-- Alpine.js Component -->
+  <script>
+      function musicListSorter() {
+          return {
+              currentSort: '{{ current_sort|default:"title" }}',
+              currentOrder: '{{ current_order|default:"asc" }}',
+
+              sortDisplayNames: {
+                  'location': 'Location',
+                  'title': 'Title',
+                  'composer': 'Composer',
+                  'arranger': 'Arranger',
+                  'genre': 'Genre',
+                  'difficulty': 'Difficulty',
+                  'duration': 'Duration',
+                  'status': 'Status',
+                  'score': 'Score Status'
+              },
+
+              sort(field) {
+                  console.log(`Sorting by:', field, 'Current:', this.currentSort, this.currentOrder`);
+
+                  if (this.currentSort === field) {
+                      // Toggle order if same field
+                      this.currentOrder = this.currentOrder === 'asc' ? 'desc' : 'asc';
+                  } else {
+                      // New field, default to ascending
+                      this.currentSort = field;
+                      this.currentOrder = 'asc';
+                  }
+
+                  console.log(`New sort:', this.currentSort, this.currentOrder`);
+
+                  // Small delay to ensure Alpine.js updates the form values
+                  this.$nextTick(() => {
+                      document.getElementById('filter-form').submit();
+                  });
+              },
+
+              getSortIcon(field) {
+                  if (this.currentSort === field) {
+                      return this.currentOrder === 'asc' ? 'fas fa-sort-up text-blue-500' : 'fas fa-sort-down text-blue-500';
+                  }
+                  return 'fas fa-sort';
+              },
+
+              getSortDisplayName() {
+                  return this.sortDisplayNames[this.currentSort] || 'Title';
+              }
+          }
+      }
+  </script>
+
   <!-- JavaScript for Interactive Features -->
   <script>
       document.addEventListener('DOMContentLoaded', function () {
@@ -227,11 +432,21 @@
           const form = document.getElementById('filter-form');
           let searchTimeout;
 
-          searchInput.addEventListener('input', function () {
-              clearTimeout(searchTimeout);
-              searchTimeout = setTimeout(function () {
+          if (searchInput) {
+              searchInput.addEventListener('input', function () {
+                  clearTimeout(searchTimeout);
+                  searchTimeout = setTimeout(function () {
+                      form.submit();
+                  }, 500); // 500ms delay for debouncing
+              });
+          }
+
+          // Auto-submit on dropdown changes
+          const filterSelects = document.querySelectorAll('#filter-form select');
+          filterSelects.forEach(select => {
+              select.addEventListener('change', function () {
                   form.submit();
-              }, 500); // 500ms delay for debouncing
+              });
           });
 
           // Genre dropdown functionality
@@ -239,45 +454,50 @@
           const genreDropdown = document.getElementById('genre-dropdown');
           const genreText = document.getElementById('genre-selection-text');
 
-          genreBtn.addEventListener('click', function () {
-              genreDropdown.classList.toggle('hidden');
-          });
+          if (genreBtn && genreDropdown) {
+              genreBtn.addEventListener('click', function () {
+                  genreDropdown.classList.toggle('hidden');
+              });
 
-          // Close dropdown when clicking outside
-          document.addEventListener('click', function (event) {
-              if (!genreBtn.contains(event.target) && !genreDropdown.contains(event.target)) {
-                  genreDropdown.classList.add('hidden');
-              }
-          });
+              // Close dropdown when clicking outside
+              document.addEventListener('click', function (event) {
+                  if (!genreBtn.contains(event.target) && !genreDropdown.contains(event.target)) {
+                      genreDropdown.classList.add('hidden');
+                  }
+              });
 
-          // Update genre selection text
-          function updateGenreText() {
-              const checkedBoxes = genreDropdown.querySelectorAll('input[type="checkbox"]:checked');
-              if (checkedBoxes.length === 0) {
-                  genreText.textContent = 'Select genres...';
-              } else if (checkedBoxes.length === 1) {
-                  genreText.textContent = checkedBoxes[0].parentElement.textContent.trim();
-              } else {
-                  genreText.textContent = `${checkedBoxes.length} genres selected`;
+              // Update genre selection text
+              function updateGenreText() {
+                  const checkedBoxes = genreDropdown.querySelectorAll('input[type="checkbox"]:checked');
+                  if (checkedBoxes.length === 0) {
+                      genreText.textContent = 'Select genres...';
+                  } else if (checkedBoxes.length === 1) {
+                      genreText.textContent = checkedBoxes[0].parentElement.textContent.trim();
+                  } else {
+                      genreText.textContent = `${checkedBoxes.length} genres selected`;
+                  }
               }
+
+              // Listen for genre checkbox changes
+              genreDropdown.addEventListener('change', function () {
+                  updateGenreText();
+                  // Auto-submit form when genre selection changes
+                  setTimeout(function () {
+                      form.submit();
+                  }, 100);
+              });
+
+              // Initialize genre text
+              updateGenreText();
           }
 
-          // Listen for genre checkbox changes
-          genreDropdown.addEventListener('change', function () {
-              updateGenreText();
-              // Auto-submit form when genre selection changes
-              setTimeout(function () {
-                  form.submit();
-              }, 100);
-          });
-
           // Clear filters functionality
-          document.getElementById('clear-filters').addEventListener('click', function () {
-              window.location.href = window.location.pathname;
-          });
-
-          // Initialize genre text
-          updateGenreText();
+          const clearFiltersBtn = document.getElementById('clear-filters');
+          if (clearFiltersBtn) {
+              clearFiltersBtn.addEventListener('click', function () {
+                  window.location.href = window.location.pathname;
+              });
+          }
       });
   </script>
 {% endblock %}

@@ -19,6 +19,8 @@ Including another URLconf
 import debug_toolbar
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
+
 from common.views import HomePageView
 from django.conf.urls.static import static
 from django.conf import settings
@@ -36,6 +38,7 @@ urlpatterns = [
     # Local Apps
     path("concerts/", include("concerts.urls")),
     path("library/", include("library.urls")),
+    path("favicon.png", RedirectView.as_view(url="/static/favicon.png")),
 ]
 # Serve media files during development
 if settings.DEBUG:

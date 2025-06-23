@@ -24,8 +24,8 @@ class MusicFilter(django_filters.FilterSet):
 
     # Difficulty dropdown
     difficulty = django_filters.ChoiceFilter(
-        choices=[("", "All Difficulties")] + Music.DIFFICULTY_CHOICES,
-        empty_label=None,
+        choices=Music.DIFFICULTY_CHOICES,
+        empty_label="All difficulties",
         widget=django_filters.widgets.forms.Select(
             attrs={
                 "class": "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
@@ -35,8 +35,23 @@ class MusicFilter(django_filters.FilterSet):
 
     # Status dropdown
     status = django_filters.ChoiceFilter(
-        choices=[("", "All Status")] + Music.STATUS_CHOICES,
-        empty_label=None,
+        choices=Music.STATUS_CHOICES,
+        empty_label="All statuses",
+        widget=django_filters.widgets.forms.Select(
+            attrs={
+                "class": "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            }
+        ),
+    )
+
+    # Score missing
+    score_missing = django_filters.ChoiceFilter(
+        choices=[
+            ("", "All pieces"),
+            (True, "Score missing"),
+            (False, "Score available"),
+        ],
+        empty_label=None,  # Don't show an additonal empty label since we have "All Pieces"
         widget=django_filters.widgets.forms.Select(
             attrs={
                 "class": "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
