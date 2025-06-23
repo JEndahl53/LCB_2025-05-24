@@ -80,4 +80,5 @@ class MusicForm(forms.ModelForm):
             "rental_end_date": forms.DateInput(attrs={"type": "date"}),
             "borrowing_start_date": forms.DateInput(attrs={"type": "date"}),
             "expected_borrowing_return_date": forms.DateInput(attrs={"type": "date"}),
+            "duration": forms.TextInput(attrs={"placeholder": "mm:ss"}),
         }

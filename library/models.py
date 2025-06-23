@@ -232,7 +232,9 @@ class Music(models.Model):
     borrowing_start_date = models.DateField(blank=True, null=True)
     expected_borrowing_return_date = models.DateField(blank=True, null=True)
     # Miscellaneous
-    duration = models.DurationField(blank=True, null=True)
+    duration = models.DurationField(
+        help_text="Enter duration as mm:ss", blank=True, null=True
+    )
     score_missing = models.BooleanField(default=False)
     notes = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)

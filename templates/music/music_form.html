@@ -207,7 +207,7 @@
             <div class="flex items-center space-x-2">
               {{ form.score_missing|add_class:"h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" }}
               <label for="{{ form.score_missing.id_for_label }}" class="text-sm font-medium text-gray-700">
-                Missing Score
+                Score Missing
               </label>
             </div>
             {% if form.score_missing.errors %}
@@ -264,8 +264,6 @@
                   <p class="text-red-600 text-xs mt-1">{{ form.purchase_price.errors.0 }}</p>
                 {% endif %}
               </div>
-
-
             </div> <!-- End Owned fields -->
 
             <!-- Loaned To fields (L) -->
@@ -275,19 +273,19 @@
                        class="block text-sm font-medium text-gray-700 mb-1">
                   Organization (Loaned to:)
                 </label>
-                {{ form.loaning_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-                {% if form.loaning_organization.errors %}
-                  <p class="text-red-600 text-xs mt-1">{{ form.loaning_organization.errors.0 }}</p>
+                {{ form.lending_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.lending_organization.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.lending_organization.errors.0 }}</p>
                 {% endif %}
               </div>
-              <div class="form-group{% if form.loan_start_date.errors %} has-error{% endif %}">
-                <label for="{{ form.loan_start_date.id_for_label }}"
+              <div class="form-group{% if form.lend_start_date.errors %} has-error{% endif %}">
+                <label for="{{ form.lend_start_date.id_for_label }}"
                        class="block text-sm font-medium text-gray-700 mb-1">
                   Start Date
                 </label>
-                {{ form.loan_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-                {% if form.loan_start_date.errors %}
-                  <p class="text-red-600 text-xs mt-1">{{ form.loan_start_date.errors.0 }}</p>
+                {{ form.lend_start_date|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.lend_start_date.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.lend_start_date.errors.0 }}</p>
                 {% endif %}
               </div>
 
@@ -301,8 +299,6 @@
                   <p class="text-red-600 text-xs mt-1">{{ form.expected_return_date.errors.0 }}</p>
                 {% endif %}
               </div>
-
-
             </div> <!-- End Loaned To fields -->
 
             <!-- Rented fields (R) -->
@@ -348,12 +344,21 @@
                   <p class="text-red-600 text-xs mt-1">{{ form.rental_end_date.errors.0 }}</p>
                 {% endif %}
               </div>
-
-
             </div> <!-- End Rented fields -->
 
             <!-- Borrowed from fields (B) -->
             <div id="borrowed-fields" class="grid grid-cols-2 gap-4 hidden">
+              <div class="form-group{% if form.borrowing_organization.errors %} has-error{% endif %} col-span-2">
+                <label for="{{ form.borrowing_organization.id_for_label }}"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                  Organization (Borrowed from:)
+                </label>
+                {{ form.borrowing_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
+                {% if form.borrowing_organization.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ form.borrowing_organization.errors.0 }}</p>
+                {% endif %}
+              </div>
+
               <div class="form-group{% if form.borrowing_start_date.errors %} has-error{% endif %}">
                 <label for="{{ form.borrowing_start_date.id_for_label }}"
                        class="block text-sm font-medium text-gray-700 mb-1">
@@ -375,18 +380,9 @@
                   <p class="text-red-600 text-xs mt-1">{{ form.expected_borrowing_return_date.errors.0 }}</p>
                 {% endif %}
               </div>
-
-              <div class="form-group{% if form.borrowing_organization.errors %} has-error{% endif %} col-span-2">
-                <label for="{{ form.borrowing_organization.id_for_label }}"
-                       class="block text-sm font-medium text-gray-700 mb-1">
-                  Organization (Borrowed from:)
-                </label>
-                {{ form.borrowing_organization|add_class:"w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" }}
-                {% if form.borrowing_organization.errors %}
-                  <p class="text-red-600 text-xs mt-1">{{ form.borrowing_organization.errors.0 }}</p>
-                {% endif %}
-              </div>
             </div> <!-- End Borrowed from fields -->
+
+
           </div>
 
           <!-- Notes (outside the grid, spans full width) -->

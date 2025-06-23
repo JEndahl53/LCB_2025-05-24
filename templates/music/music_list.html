@@ -6,11 +6,17 @@
 
 {% block content %}
   <div class="container mx-auto px-4 py-8">
-    <div class="mb-8">
+    <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">Music Library</h1>
       <p class="text-gray-600">
         Showing {{ filtered_count }} of {{ total_count }} pieces
       </p>
+      {% if user.is_authenticated %}
+        <a href="{% url 'music_create' %}"
+           class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition flex items-center">
+          <i class="fas fa-plus mr-2"></i> Add Piece
+        </a>
+      {% endif %}
     </div>
 
     <!-- Filter Bar -->
