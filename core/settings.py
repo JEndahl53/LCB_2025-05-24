@@ -17,7 +17,7 @@ from django.conf.global_settings import AUTH_USER_MODEL
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # Added a .parent to get to the parent directory of the project
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,8 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = "django-insecure-dqltl$4d1ih&#_!m)=m62pkp4eyhmm%k0v^prc=cw#x=78%^fk"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG not moved into local.py and prod.py (Django 5 by Example)
-# DEBUG = True
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -48,15 +47,12 @@ INSTALLED_APPS = [
     "library.apps.LibraryConfig",
     "common.apps.CommonConfig",
     # 3rd party apps
-    "neapolitan",
     "widget_tweaks",
     "django_filters",
-    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -89,12 +85,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Databse settings moved into local.py and prod.py
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
 
 
 # Password validation
