@@ -12,6 +12,15 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+
+# Environment variables
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+
+# Read environment variables from .env file
+environ.Env.read_env()
 
 from django.conf.global_settings import AUTH_USER_MODEL
 
@@ -24,12 +33,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-dqltl$4d1ih&#_!m)=m62pkp4eyhmm%k0v^prc=cw#x=78%^fk"
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS').split(' ')
 
 
 # Application definition
@@ -87,8 +96,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 # Databse settings moved into local.py and prod.py
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": env('SQL_ENGINE', 'django.db.backends.sqlite3'),
+        "NAME": env('SQL_DATABASE', BASE_DIR / 'db.sqlite3'),
+        'USER': env('SQL_USER', 'user'),
+        'PASSWORD': env('SQL_PASSWORD', 'password'),
+        'HOST': env('SQL_HOST', 'localhost'),
+        'PORT': env('SQL_PORT', '5432'),
     }
 }
 
@@ -127,10 +140,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = BASE_DIR / "mediafiles"
+
+# Production Security Settings
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_SECONDS = 31436000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+X_FRAME_OPTIONS = 'DENY'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

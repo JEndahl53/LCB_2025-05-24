@@ -1,0 +1,63 @@
+###########
+# BUILDER #
+###########
+FROM python:3.11.4-slim-buster as BUILDER
+
+WORKDIR /usr/src/app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc
+
+# Install Python dependencies
+RUN pip install --upgrade pip
+RUN pip install flake8==6.0.0
+COPY . /usr/src/app/
+RUN flake8 --ignore=E501,F401 .
+
+COPY ./requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+
+###########
+#  FINAL  #
+###########
+FROM python:3.11.4-slim-buster
+
+# Create app user
+RUN mkdir -p /home/app
+RUN addgroup --system app && adduser --system --group app
+
+# Create directories
+ENV HOME=/home/app
+ENV APP_HOME=/home/app/web
+RUN mkdir $APP_HOME
+RUN mkdir $APP_HOME/staticfiles
+RUN mkdir $APP_HOME/mediafiles
+WORKDIR $APP_HOME
+
+# Install dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends netcat
+COPY --from=builder /usr/src/app/wheels /wheels
+COPY --from=builder /usr/src/app/requirements.txt
+RUN pip install --upgrade pip
+RUN pip install --no-cache /wheels/*
+
+# Copy entrypoint script
+COPY ./entrypoint.prod.sh .
+RUN sed -i 's/\r$//g' $APP_HOME/entrypoint.prod.sh
+RUN chmod +x $APP_HOME/entrypoint.prod.sh
+
+# Copy project
+COPY . $APP_HOME
+
+# Change ownership to app user
+RUN chown -R app:app $APP_HOME
+
+# Switch to app user
+USER app
+
+# Run entrypoint
+ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]
